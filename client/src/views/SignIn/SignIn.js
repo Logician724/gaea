@@ -14,12 +14,7 @@ import {
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
-import firebaseConfig from '../../firebase-config';
-import firebase from 'firebase';
-
-
-const app = firebase.initializeApp(firebaseConfig);
-const database = app.database();
+import {database} from '../../firebase-config';
 const userRef = database.ref('users');
 const schema = {
   email: {

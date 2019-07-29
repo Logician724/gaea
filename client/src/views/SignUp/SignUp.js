@@ -14,6 +14,9 @@ import {
   Typography
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { database } from '../../firebase-config';
+
+
 
 const schema = {
   firstName: {
@@ -188,7 +191,14 @@ const SignUp = props => {
   const handleSignUp = event => {
     event.preventDefault();
     console.log(formState);
-    // const dataSnapshot = await userRef.orderByChild('email').equalTo(formState.values.email).once('value');    
+    const userListRef = database.ref('users');
+    const newUserRef = userListRef.push();
+    newUserRef.set({
+      firstName: formState.values.firstName,
+      lastName: formState.values.lastName,
+      email: formState.values.email,
+      password: formState.values.password
+    });
     // // In case the email doesn't exist in the DB
     // if(!dataSnapshot.val()){
     //   return setFormState(formState => ({
