@@ -14,7 +14,13 @@ import {
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
+import firebaseConfig from '../../firebase-config';
+import firebase from 'firebase';
 
+
+const app = firebase.initializeApp(firebaseConfig);
+const database = app.database();
+const userRef = database.ref('users');
 const schema = {
   email: {
     presence: { allowEmpty: false, message: 'is required' },
@@ -170,9 +176,30 @@ const SignIn = props => {
     }));
   };
 
-  const handleSignIn = event => {
+  const handleSignIn = async (event) => {
     event.preventDefault();
-    history.push('/');
+    console.log(formState);
+    const dataSnapshot = await userRef.orderByChild('email').equalTo(formState.values.email).once('value');    
+    // In case the email doesn't exist in the DB
+    if(!dataSnapshot.val()){
+      return setFormState(formState => ({
+        ...formState,
+        errors: {
+          ...formState.errors,
+          email: ['incorrect email']
+        }
+      }));
+    }
+    if(dataSnapshot.val().password !== formState.values.password){
+      return setFormState(formState => ({
+        ...formState,
+        errors: {
+          ...formState.errors,
+          password: ['incorrect password']
+        }
+      }));
+    }
+    localStorage.setItem('gaeaUser',JSON.stringify(dataSnapshot.val()));
   };
 
   const hasError = field =>

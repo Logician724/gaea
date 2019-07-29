@@ -187,7 +187,28 @@ const SignUp = props => {
 
   const handleSignUp = event => {
     event.preventDefault();
-    history.push('/');
+    console.log(formState);
+    // const dataSnapshot = await userRef.orderByChild('email').equalTo(formState.values.email).once('value');    
+    // // In case the email doesn't exist in the DB
+    // if(!dataSnapshot.val()){
+    //   return setFormState(formState => ({
+    //     ...formState,
+    //     errors: {
+    //       ...formState.errors,
+    //       email: ['incorrect email']
+    //     }
+    //   }));
+    // }
+    // if(dataSnapshot.val().password !== formState.values.password){
+    //   return setFormState(formState => ({
+    //     ...formState,
+    //     errors: {
+    //       ...formState.errors,
+    //       password: ['incorrect password']
+    //     }
+    //   }));
+    // }
+    // localStorage.setItem('gaeaUser',JSON.stringify(dataSnapshot.val()));
   };
 
   const hasError = field =>
