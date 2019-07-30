@@ -57,7 +57,7 @@ const location = [
 
 const OptionTextField = props => {
 
-  const {id, order, setOrder, isAmount, ...rest } = props;
+  const {id, order, setOrder, isAmount } = props;
   const classes = useStyles();
 
   const [values, setValues] = React.useState(0);
@@ -66,7 +66,6 @@ const OptionTextField = props => {
     const newOrder = order
     newOrder.push({id: id, amount: amount})
     setOrder(newOrder)
-    console.log(order)
     setValues(amount);
     
   };
@@ -74,7 +73,6 @@ const OptionTextField = props => {
   const handleLocation = (event) => {
     const loc = event.target.value
     setOrder(loc)
-    console.log(order)
     setValues(loc);
     
   };
@@ -85,33 +83,35 @@ const OptionTextField = props => {
   } else {
     choices = location
   }
-  console.log(`${isAmount} ${choices}`)
 
   return ( 
- <TextField
-        id={id}
-        select
-        label="Select"
-        className={classes.textField}
-        value={values}
-        onChange={isAmount?handleChange:handleLocation}
-        SelectProps={{
-          MenuProps: {
-            className: classes.menu,
-          },
-        }}
-        helperText={isAmount?"Please select your amount":"Please select your location"}
-        margin="normal"
-        variant="outlined"
-      >
-        {choices.map(option => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </TextField>
-      );
-    }
+    <TextField
+      className={classes.textField}
+      helperText={isAmount?'Please select your amount':'Please select your location'}
+      id={id}
+      label="Select"
+      margin="normal"
+      onChange={isAmount?handleChange:handleLocation}
+      select
+      SelectProps={{
+        MenuProps: {
+          className: classes.menu,
+        },
+      }}
+      value={values}
+      variant="outlined"
+    >
+      {choices.map(option => (
+        <MenuItem
+          key={option.value}
+          value={option.value}
+        >
+          {option.label}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
+}
 
 OptionTextField.propTypes = {
   id: PropTypes.string.isRequired,
