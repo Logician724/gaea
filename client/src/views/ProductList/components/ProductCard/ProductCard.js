@@ -95,7 +95,7 @@ const ProductCard = props => {
             </Grid>
           <Grid>
           {/* add text field here */}
-          <OptionTextField id={product.id} order={order} setOrder={setOrder} />
+          <OptionTextField id={product.id} order={order} setOrder={setOrder} isAmount={true} />
 
             </Grid>
           </Grid>
