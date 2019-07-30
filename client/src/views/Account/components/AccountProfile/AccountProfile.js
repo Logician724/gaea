@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import moment from 'moment';
@@ -34,18 +34,24 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const currentUser = JSON.parse(localStorage.getItem('gaeaUserData'))
+
 const AccountProfile = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
 
-  const user = {
-    name: 'Shen Zhi',
-    city: 'Los Angeles',
-    country: 'USA',
-    timezone: 'GTM-7',
-    avatar: '/images/avatars/avatar_11.png'
-  };
+  const [user, setUser] = useState({
+    firstName: currentUser.firstName,
+    lastName: currentUser.lastName,
+    email: currentUser.email,
+    phone: '',
+    state: 'Cairo',
+    city: 'Cairo',
+    country: 'Egypt',
+    type: currentUser.isAdmin
+  });
+
 
   return (
     <Card
@@ -59,8 +65,23 @@ const AccountProfile = props => {
               gutterBottom
               variant="h2"
             >
-              John Doe
+              {`${user.firstName} ${user.lastName}`}
             </Typography>
+            <Typography
+              className={classes.locationText}
+              color="textSecondary"
+              variant="body1"
+            >
+              {
+                
+                `Account type: ${user.type ? "Admin" : "User"}`
+              }
+            </Typography>
+            <Typography
+              className={classes.dateText}
+              color="textSecondary"
+              variant="body1"
+            ></Typography>
             <Typography
               className={classes.locationText}
               color="textSecondary"

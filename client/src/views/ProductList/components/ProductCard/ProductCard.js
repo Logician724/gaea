@@ -41,10 +41,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ProductCard = props => {
-  const { className, product, order, setOrder, ...rest } = props;
-
+  const { className, product, order, setOrder, isAdmin, ...rest } = props;
+  console.log(isAdmin)
   const classes = useStyles();
-
+ 
   return (
     <Card
       {...rest}
@@ -73,30 +73,34 @@ const ProductCard = props => {
         </Typography>
       </CardContent>
       <Divider />
-      <CardActions>
-        <Grid
-          container
-          justify="space-between"
-        >
+      {
+        isAdmin? null
+        :
+        <CardActions>
           <Grid
-            className={classes.statsItem}
-            item
+            container
+            justify="space-between"
           >
-            <AccessTimeIcon className={classes.statsIcon} />
-            <Typography
-              display="inline"
-              variant="body2"
+            <Grid
+              className={classes.statsItem}
+              item
             >
-             Choose amount
-            </Typography>
-          </Grid>
-         <Grid>
-        {/* add text field here */}
-        <OptionTextField id={product.id} order={order} setOrder={setOrder} />
+              <AccessTimeIcon className={classes.statsIcon} />
+              <Typography
+                display="inline"
+                variant="body2"
+              >
+              Choose amount
+              </Typography>
+            </Grid>
+          <Grid>
+          {/* add text field here */}
+          <OptionTextField id={product.id} order={order} setOrder={setOrder} />
 
+            </Grid>
           </Grid>
-        </Grid>
-      </CardActions>
+        </CardActions>
+    }
     </Card>
   );
 };

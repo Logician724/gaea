@@ -10,6 +10,7 @@ import { NotificationManager} from 'react-notifications';
 import {database} from '../../../../firebase-config';
 
 const recyclingMaterialRef = database.ref('recyclingMaterial');
+const marketplaceRef = database.ref('marketplace');
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -34,7 +35,16 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ProductsToolbar = props => {
-  const { className, ...rest } = props;
+  const { className, marketplace, ...rest } = props;
+
+  let addRef = null
+  if(marketplace === true) {
+    addRef = marketplaceRef
+   
+  } else {
+    addRef = recyclingMaterialRef
+    
+  }
 
   const classes = useStyles();
 
@@ -42,6 +52,7 @@ const ProductsToolbar = props => {
 
   const nameRef = useRef(null)
   const descRef = useRef(null)
+  const urlRef = useRef(null)
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -54,20 +65,22 @@ const ProductsToolbar = props => {
   const handleAdd = () => {
     const name = nameRef.current.value
     const description = descRef.current.value
-    console.log(`Name: ${name} Description: ${description}`)
-    const result = addRecyclingMaterial(name, description)
+    const url = urlRef.current.value
+    console.log(`Name: ${name} Description: ${description} Url: ${url}`)
+    const result = addRecyclingMaterial(name, description, url)
     console.log(result)
     setOpen(false);
   }
 
-  const addRecyclingMaterial = async (name, desc) => {
+  const addRecyclingMaterial = async (name, desc, url) => {
     const newRecyclingMaterial = {
       name: name,
-      description: desc
+      description: desc,
+      imageUrl: url
     }
   
     try {
-      const doc = await recyclingMaterialRef.push(newRecyclingMaterial)
+      const doc = await addRef.push(newRecyclingMaterial)
       console.log( { message: `doccument ${doc.key} created successfully` })
       NotificationManager.success('Item added successfully','Success',2000);
     } catch (err) {
@@ -95,7 +108,7 @@ const ProductsToolbar = props => {
         <DialogTitle id="form-dialog-title">Add Item</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please add the item name and decription
+            Please add the item name, decription and an image url
           </DialogContentText>
           <TextField
             autoFocus
@@ -112,6 +125,15 @@ const ProductsToolbar = props => {
             id="description"
             inputRef={descRef}
             label="Description"
+            type="string"
+            fullWidth
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="url"
+            inputRef={urlRef}
+            label="Image Url"
             type="string"
             fullWidth
           />

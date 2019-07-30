@@ -4,10 +4,13 @@ import { Button, Grid, Typography } from '@material-ui/core';
 import { ProductsToolbar, ProductCard } from './components';
 import {database} from '../../firebase-config';
 import { NotificationManager} from 'react-notifications';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const recyclingMaterialRef = database.ref('recyclingMaterial');
-const orderRef = database.ref('orders')
+const marketplaceRef = database.ref('marketplace')
+
+const recyclingorderRef = database.ref('recyclingOrders')
+const marketplaceorderRef = database.ref('marketplaceOrders')
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,26 +24,51 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end'
-  }
+  },
+  center : {
+    marginTop: theme.spacing(3),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  progress: {
+    margin: theme.spacing(2),
+  },
 }));
 
-const AdminProductList = () => {
+const AdminProductList = props => {
+  const {marketplace, ...rest } = props;
+
   const [products, setProducts] = useState([]);
   const [limit, setLimit] = useState(6);
   const [numRetrived, setNumRetrived] = useState(0)
   const [order, setOrder] = useState([])
+  const [loaded, setLoaded] = useState(false)
+  const isAdmin = JSON.parse(localStorage.getItem('gaeaUserData')).isAdmin
+
+  let addRef = null
+  let orderRef = null
+  if(marketplace === true) {
+    addRef = marketplaceRef
+    orderRef = marketplaceorderRef
+  } else {
+    addRef = recyclingMaterialRef
+    orderRef = recyclingorderRef
+  }
 
   const classes = useStyles();
   useEffect(() => {
     
       let products = []
       let counter = 0
-      recyclingMaterialRef.limitToLast(limit).once("value")
+      addRef.limitToFirst(limit).once("value")
       .then(snapshot => {
         snapshot.forEach(doc => {
           counter++
-          products.push({id: doc.key, title: doc.val().name ,description: doc.val().description});
+          products.push({id: doc.key, title: doc.val().name ,description: doc.val().description, imageUrl: doc.val().imageUrl});
         });
+          if(loaded === false)
+            setLoaded(true)
           setProducts(products)
           setNumRetrived(counter)
       })
@@ -72,11 +100,32 @@ const AdminProductList = () => {
       NotificationManager.error('Something went wrong, try again in a bit.','Error',2000);
     }
   }
+
+  if(!loaded)
+    return (
+      <div className={classes.root}>
+        <div className={classes.center}>
+          <CircularProgress className={classes.progress} />
+        </div>
+      </div>
+    )
   
   return (
     <div className={classes.root}>
-      <ProductsToolbar />
+     { isAdmin?
+        <ProductsToolbar marketplace={marketplace} />
+        : null
+      }
       <div className={classes.content}>
+        <Grid className={classes.center}>
+
+        {
+          products.length === 0?
+          <h1>Nothing to display</h1>
+          : null
+          
+        }
+        </Grid>
         <Grid
           container
           spacing={3}
@@ -89,7 +138,7 @@ const AdminProductList = () => {
               md={6}
               xs={12}
             >
-              <ProductCard product={product} order = {order} setOrder = {setOrder} />
+              <ProductCard product={product} order = {order} setOrder = {setOrder} isAdmin={isAdmin} />
             </Grid>
           ))}
         </Grid>
@@ -102,13 +151,18 @@ const AdminProductList = () => {
           Show More
         </Button>
       </div>
-      <Button
-      center
-      color="primary"
-      variant="contained"
-      onClick={makeOrder}>
-        Place order
-      </Button>
+      { isAdmin? null
+        :
+         <div className={classes.center}>
+         <Button
+         color="primary"
+         variant="contained"
+         onClick={makeOrder}>
+           Place order
+         </Button>
+       </div>
+      }
+     
     </div>
 
   );
