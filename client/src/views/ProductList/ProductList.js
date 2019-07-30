@@ -4,7 +4,7 @@ import { Button, Grid, Typography } from '@material-ui/core';
 import { ProductsToolbar, ProductCard } from './components';
 import {database} from '../../firebase-config';
 import { NotificationManager} from 'react-notifications';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const recyclingMaterialRef = database.ref('recyclingMaterial');
 const orderRef = database.ref('orders')
@@ -21,7 +21,16 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end'
-  }
+  },
+  center : {
+    marginTop: theme.spacing(3),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  progress: {
+    margin: theme.spacing(2),
+  },
 }));
 
 const AdminProductList = () => {
@@ -29,7 +38,7 @@ const AdminProductList = () => {
   const [limit, setLimit] = useState(6);
   const [numRetrived, setNumRetrived] = useState(0)
   const [order, setOrder] = useState([])
-
+  const [loaded, setLoaded] = useState(false)
   const classes = useStyles();
   useEffect(() => {
     
@@ -41,6 +50,8 @@ const AdminProductList = () => {
           counter++
           products.push({id: doc.key, title: doc.val().name ,description: doc.val().description});
         });
+          if(loaded === false)
+            setLoaded(true)
           setProducts(products)
           setNumRetrived(counter)
       })
@@ -72,6 +83,15 @@ const AdminProductList = () => {
       NotificationManager.error('Something went wrong, try again in a bit.','Error',2000);
     }
   }
+
+  if(!loaded)
+    return (
+      <div className={classes.root}>
+        <div className={classes.center}>
+          <CircularProgress className={classes.progress} />
+        </div>
+      </div>
+    )
   
   return (
     <div className={classes.root}>
