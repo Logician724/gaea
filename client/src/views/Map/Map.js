@@ -1,94 +1,206 @@
 import React, { useState } from 'react';
-import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
+import GoogleMapReact from 'google-map-react';
 import { app, database } from '../../firebase-config';
+import { makeStyles, useTheme } from '@material-ui/styles';
+import MarkerManager from './MarkerManager';
 
+/* eslint-disable */
 const mapStyle = [
   {
     elementType: 'geometry',
-    stylers: [{color: '#eceff1'}]
+    stylers: [{ color: '#eceff1' }]
   },
   {
     elementType: 'labels',
-    stylers: [{visibility: 'off'}]
+    stylers: [{ visibility: 'off' }]
   },
   {
     featureType: 'administrative',
     elementType: 'labels',
-    stylers: [{visibility: 'on'}]
+    stylers: [{ visibility: 'on' }]
   },
   {
     featureType: 'road',
     elementType: 'geometry',
-    stylers: [{color: '#cfd8dc'}]
+    stylers: [{ color: '#cfd8dc' }]
   },
   {
     featureType: 'road',
     elementType: 'geometry.stroke',
-    stylers: [{visibility: 'off'}]
+    stylers: [{ visibility: 'off' }]
   },
   {
     featureType: 'road.local',
-    stylers: [{visibility: 'off'}]
+    stylers: [{ visibility: 'off' }]
   },
   {
     featureType: 'water',
-    stylers: [{color: '#b0bec5'}]
+    stylers: [{ color: '#b0bec5' }]
   }
 ];
 
-  
-class mapContainer extends React.Component {
-    state = {
-      stations: [
-        {
-          position: { lat: 37.762391, lng: -122.439192 },
-          name: 'Bla'
-        },
-        {
-          position: { lat: 37.759703, lng: -122.428093 },
-          name: 'Bla 2'
-        },
-        {
-          position: { lat: 37.778519, lng: -122.405640 },
-          name: 'Bla 2'
+function colorToBusMarker(color) {
+  switch (color) {
+    case 'FCE444':
+      return '/images/dashboard/busmarker_yellow.png';
+    case 'C4E86B':
+      return '/images/dashboard/busmarker_lime.png';
+    case '00C1DE':
+      return '/images/dashboard/busmarker_teal.png';
+    case 'FFAD00':
+      return '/images/dashboard/busmarker_orange.png';
+    case '0061C8':
+      return '/images/dashboard/busmarker_indigo.png';
+    case '8A8A8D':
+      return '/images/dashboard/busmarker_caltrain.png';
+    case 'EA1D76':
+      return '/images/dashboard/busmarker_sf.png';
+    default:
+      console.log(`colorToBusMarker(${color}) not handled`);
+      return '';
+  }
+}
+
+function geocodeAddress(address, map, icon, title, maps) {
+  const geocoder = new maps.Geocoder();
+  geocoder.geocode({address: address}, (results, status) => {
+    if (status === 'OK') {
+      const marker = new maps.Marker({
+        map: map,
+        position: results[0].geometry.location,
+        icon: icon,
+        title: title,
+        optimized: false
+      });
+    } else {
+      console.log(
+        'Geocode was not successful for the following reason: ' + status
+      );
+    }
+  });
+}
+
+class Map extends React.Component {
+  state = {
+    markers: [
+
+    ],
+    bounds: null,
+    center: null,
+    zoom: 13
+  };
+
+  componentDidMount = async () => {
+    const mapRef = database.ref('map');
+    const midpointRef = database.ref('midpoint');
+    const midpointSnapshot = await midpointRef.once('value');
+    const midpoint = midpointSnapshot.val();
+    this.setState((prevState) => ({
+      ...prevState,
+      center: [midpoint.lat, midpoint.lng]
+    }));
+    console.log(midpoint);
+
+  }
+
+
+  handleApiLoaded = (map, maps) => {
+    geocodeAddress(
+      '1 Amphitheatre Pkwy, Mountain View, CA 94043',
+      map,
+      '/images/dashboard/gaea.png',
+      'HQ',
+      maps
+    );
+    const markerManager = new MarkerManager(map);
+    const mapRef = database.ref('map');
+    mapRef.on('value', (snapshot) => {
+      const mapData = snapshot.val();
+      map.fitBounds({
+        east: mapData.northEastLng,
+        north: mapData.northEastLat,
+        south: mapData.southWestLat,
+        west: mapData.southWestLng
+      });
+
+      markerManager.clear();
+      mapData.markers.forEach(marker => {
+        markerManager.add(
+          {
+            lat: marker.lat,
+            lng: marker.lng
+          },
+          marker.iconPath,
+          marker.name
+        );
+      });
+      const timeRef = database.ref('current-time');
+      timeRef.on('value', snapshot => {
+        console.log(snapshot.val().display);
+      });
+      const busLocationMarkers = {};
+      const busRef = database.ref('bus-locations');
+      busRef.on('value', snapshot => {
+        const val = snapshot.val();
+
+        for (let key in busLocationMarkers) {
+          if (val === null || !(key in val)) {
+            const marker = busLocationMarkers[key];
+            marker.setMap(null);
+            delete busLocationMarkers[key];
+          }
         }
 
-      ]
-    };
+        for (let key in val) {
+          const bus = val[key];
 
-    componentDidMount = () => {
-        console.log(this.props.google);
-    //   const mapRef = database.ref('map');
-    //   mapRef.on('value', snapshot => {
+          if (key in busLocationMarkers) {
+            const marker = busLocationMarkers[key];
+            marker.setPosition({
+              lat: bus.lat,
+              lng: bus.lng
+            });
+          } else {
+            const url = colorToBusMarker(bus.route_color);
+            const marker = new maps.Marker({
+              position: {
+                lat: bus.lat,
+                lng: bus.lng
+              },
+              map: map,
+              icon: {
+                url,
+                anchor: new maps.Point(30, 30) // Bus markers are 60x60 px
+              },
+              title: bus.route_name,
+              optimized: false
+            });
+            busLocationMarkers[key] = marker;
+          }
+        }
+      });
+    });
+  };
 
-    //   })
-    }
+  render = () => (
+    <div style={{ width: '100%', height: '100%' }}>
+      {this.state.center ?
+        <GoogleMapReact
 
-generateStations = (stations) => {
-  return stations.map((station) => (
-    <Marker
-      name={station.name}
-      position={station.position}
-    />
-  ))
+          bootstrapURLKeys={{
+            key: 'AIzaSyAWBWFA0Yc2mVlahRENOsmmFSPNTHLfTdU'
+          }}
+          defaultCenter={this.state.center}
+          defaultZoom={this.state.zoom}
+          yesIWantToUseGoogleMapApiInternals
+          onGoogleApiLoaded={({ map, maps }) => this.handleApiLoaded(map, maps)}
+        >
+        </GoogleMapReact>
+        :
+        'Loading'
+      }
+
+    </div>
+  );
 }
-render = () => (
-  <Map
-    google={this.props.google}
-    style={mapStyle}
-    zoom={14}
-  >
-
-    {this.generateStations(this.state.stations)}
-    < InfoWindow >
-      <div>
-        <h1>Heyo</h1>
-      </div>
-    </InfoWindow>
-  </Map >
-);
-}
-
-export default GoogleApiWrapper({
-  apiKey: 'AIzaSyAWBWFA0Yc2mVlahRENOsmmFSPNTHLfTdU'
-})(mapContainer);
+export default Map;
