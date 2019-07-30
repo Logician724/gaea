@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, withRouter } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
@@ -21,8 +21,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Topbar = props => {
-  const { className, onSidebarOpen, ...rest } = props;
-
+  const { className, onSidebarOpen, history, ...rest } = props;
   const classes = useStyles();
 
   const [notifications] = useState([]);
@@ -53,6 +52,10 @@ const Topbar = props => {
           <IconButton
             className={classes.signOutButton}
             color="inherit"
+            onClick = {() => {
+              localStorage.removeItem('gaeaUserData');
+              history.push('/sign-in')
+            }}
           >
             <InputIcon />
           </IconButton>
@@ -75,4 +78,4 @@ Topbar.propTypes = {
   onSidebarOpen: PropTypes.func
 };
 
-export default Topbar;
+export default withRouter(Topbar);

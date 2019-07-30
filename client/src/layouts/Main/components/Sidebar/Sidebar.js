@@ -97,7 +97,9 @@ const Sidebar = props => {
         {...rest}
         className={clsx(classes.root, className)}
       >
-        <Profile />
+        <Profile 
+          userData = {props.userData}
+        />
         <Divider className={classes.divider} />
         <SidebarNav
           className={classes.nav}
