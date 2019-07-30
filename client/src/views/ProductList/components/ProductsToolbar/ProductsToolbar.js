@@ -1,10 +1,14 @@
 import React from 'react';
+import { useRef } from 'react'
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
-import { Button } from '@material-ui/core';
-
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle  } from '@material-ui/core';
 import { SearchInput } from 'components';
+
+import {database} from '../../../../firebase-config';
+
+const recyclingMaterialRef = database.ref('recyclingMaterial');
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -33,6 +37,43 @@ const ProductsToolbar = props => {
 
   const classes = useStyles();
 
+  const [open, setOpen] = React.useState(false);
+
+  const nameRef = useRef(null)
+  const descRef = useRef(null)
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  }
+
+  const handleClose= () => {
+    setOpen(false);
+  }
+
+  const handleAdd = () => {
+    const name = nameRef.current.value
+    const description = descRef.current.value
+    console.log(`Name: ${name} Description: ${description}`)
+    const result = addRecyclingMaterial(name, description)
+    console.log(result)
+    setOpen(false);
+  }
+
+  const addRecyclingMaterial = async (name, desc) => {
+    const newRecyclingMaterial = {
+      name: name,
+      description: desc
+    }
+  
+    try {
+      const doc = await recyclingMaterialRef.push(newRecyclingMaterial)
+      return { message: `doccument ${doc.id} created successfully` }
+    } catch (err) {
+      console.log(err)
+      return { error: 'Something went wrong' }
+    }
+  }
+
   return (
     <div
       {...rest}
@@ -40,21 +81,56 @@ const ProductsToolbar = props => {
     >
       <div className={classes.row}>
         <span className={classes.spacer} />
-        <Button className={classes.importButton}>Import</Button>
-        <Button className={classes.exportButton}>Export</Button>
         <Button
           color="primary"
           variant="contained"
+          onClick={handleClickOpen}
         >
           Add product
         </Button>
+
+        <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Add Item</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please add the item name and decription
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            inputRef= {nameRef}
+            label="Name"
+            type="string"
+            fullWidth
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="description"
+            inputRef={descRef}
+            label="Description"
+            type="string"
+            fullWidth
+          />
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleAdd} color="primary">
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
       </div>
-      <div className={classes.row}>
+      {/* <div className={classes.row}>
         <SearchInput
           className={classes.searchInput}
           placeholder="Search product"
         />
-      </div>
+      </div> */}
     </div>
   );
 };

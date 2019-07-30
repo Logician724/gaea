@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { IconButton, Grid, Typography } from '@material-ui/core';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-
+import { Button, Grid, Typography } from '@material-ui/core';
 import { ProductsToolbar, ProductCard } from './components';
-import mockData from './data';
+import {database} from '../../firebase-config';
+
+
+const recyclingMaterialRef = database.ref('recyclingMaterial');
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,11 +22,42 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProductList = () => {
+const AdminProductList = () => {
+  const [products, setProducts] = useState([]);
+  const [limit, setLimit] = useState(6);
+  const [numRetrived, setNumRetrived] = useState(0)
   const classes = useStyles();
+  useEffect(() => {
+    
+      let products = []
+      let counter = 0
+      recyclingMaterialRef.limitToLast(limit).once("value")
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          counter++
+          products.push({id: doc.key, title: doc.val().name ,description: doc.val().description});
+        });
+          setProducts(products)
+          setNumRetrived(counter)
+      })
+      .catch(err => {
+          console.log('Error getting documents', err);
+      });
+    
+  })
 
-  const [products] = useState(mockData);
+  const increment = () => {
+    if(limit <= numRetrived) {
+      setLimit(limit + 6)
+    }
+  }
 
+  const decrement = () => {
+    if(limit !== 6) {
+      setLimit(limit - 6)
+    }
+  }
+  
   return (
     <div className={classes.root}>
       <ProductsToolbar />
@@ -49,16 +80,15 @@ const ProductList = () => {
         </Grid>
       </div>
       <div className={classes.pagination}>
-        <Typography variant="caption">1-6 of 20</Typography>
-        <IconButton>
-          <ChevronLeftIcon />
-        </IconButton>
-        <IconButton>
-          <ChevronRightIcon />
-        </IconButton>
+        <Typography variant="caption">{`1-${numRetrived}`}</Typography>
+        <Button
+        color="primary"
+        onClick={increment}>
+          Show More
+        </Button>
       </div>
     </div>
   );
 };
 
-export default ProductList;
+export default AdminProductList;
