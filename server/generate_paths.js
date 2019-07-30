@@ -23,7 +23,8 @@ async function generate_paths() {
     }
     const tripsWithLocations = [];
 
-    trips = trips.slice(0, 1)
+    let index = 1
+    trips = trips.slice(index, index + 6)
 
     for (const trip of trips) {
         tripIndex = trips.indexOf(trip)
@@ -53,7 +54,7 @@ async function generate_paths() {
         }
         let response = null
         try {
-             response = await MapsClient.directions(request).asPromise();
+            response = await MapsClient.directions(request).asPromise();
         } catch (err) {
             console.log('request error', err);
         }

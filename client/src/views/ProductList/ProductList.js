@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { IconButton, Grid, Typography } from '@material-ui/core';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-
+import { Button, Grid, Typography } from '@material-ui/core';
 import { ProductsToolbar, ProductCard } from './components';
-import mockData from './data';
+import {database} from '../../firebase-config';
+import { NotificationManager} from 'react-notifications';
+
+
+const recyclingMaterialRef = database.ref('recyclingMaterial');
+const orderRef = database.ref('orders')
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,11 +24,55 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProductList = () => {
+const AdminProductList = () => {
+  const [products, setProducts] = useState([]);
+  const [limit, setLimit] = useState(6);
+  const [numRetrived, setNumRetrived] = useState(0)
+  const [order, setOrder] = useState([])
+
   const classes = useStyles();
+  useEffect(() => {
+    
+      let products = []
+      let counter = 0
+      recyclingMaterialRef.limitToLast(limit).once("value")
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          counter++
+          products.push({id: doc.key, title: doc.val().name ,description: doc.val().description});
+        });
+          setProducts(products)
+          setNumRetrived(counter)
+      })
+      .catch(err => {
+          console.log('Error getting documents', err);
+      });
 
-  const [products] = useState(mockData);
+  
+    })
 
+  const increment = () => {
+    if(limit <= numRetrived) {
+      setLimit(limit + 6)
+    }
+  }
+
+  const makeOrder = async () => {
+    console.log('here')
+    const orderToSend = {
+      order: order,
+      address: "bla bla"
+    }
+    try {
+      const doc = await orderRef.push(orderToSend)
+      console.log( { message: `doccument ${doc.key} created successfully` })
+      NotificationManager.success('Order placed successfully','Success',2000);
+    } catch (err) {
+      console.log(err)
+      NotificationManager.error('Something went wrong, try again in a bit.','Error',2000);
+    }
+  }
+  
   return (
     <div className={classes.root}>
       <ProductsToolbar />
@@ -43,22 +89,29 @@ const ProductList = () => {
               md={6}
               xs={12}
             >
-              <ProductCard product={product} />
+              <ProductCard product={product} order = {order} setOrder = {setOrder} />
             </Grid>
           ))}
         </Grid>
       </div>
       <div className={classes.pagination}>
-        <Typography variant="caption">1-6 of 20</Typography>
-        <IconButton>
-          <ChevronLeftIcon />
-        </IconButton>
-        <IconButton>
-          <ChevronRightIcon />
-        </IconButton>
+        <Typography variant="caption">{`1-${numRetrived}`}</Typography>
+        <Button
+        color="primary"
+        onClick={increment}>
+          Show More
+        </Button>
       </div>
+      <Button
+      center
+      color="primary"
+      variant="contained"
+      onClick={makeOrder}>
+        Place order
+      </Button>
     </div>
+
   );
 };
 
-export default ProductList;
+export default AdminProductList;
