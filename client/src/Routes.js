@@ -14,7 +14,8 @@ import {
   Settings as SettingsView,
   SignUp as SignUpView,
   SignIn as SignInView,
-  NotFound as NotFoundView
+  NotFound as NotFoundView,
+  Map as MapView
 } from './views';
 
 const Routes = () => {
@@ -80,11 +81,18 @@ const Routes = () => {
         path="/sign-in"
       />
       <RouteWithLayout
+        component={MapView}
+        exact
+        layout={MainLayout}
+        path="/map"
+      />
+      <RouteWithLayout
         component={NotFoundView}
         exact
         layout={MinimalLayout}
         path="/not-found"
       />
+
       <Redirect to="/not-found" />
     </Switch>
   );

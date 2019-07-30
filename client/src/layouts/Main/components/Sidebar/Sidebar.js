@@ -67,6 +67,11 @@ const Sidebar = props => {
       title: 'Settings',
       href: '/settings',
       icon: <SettingsIcon />
+    },
+    {
+      title: 'Map',
+      href: '/map',
+      icon: null
     }
   ];
 
