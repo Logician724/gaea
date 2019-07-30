@@ -1,0 +1,5 @@
+{
+    "mapsApiKey": "AIzaSyAWBWFA0Yc2mVlahRENOsmmFSPNTHLfTdU",
+    "databaseURL": "https://trial-fb.firebaseio.com",
+	"simulation": true
+}

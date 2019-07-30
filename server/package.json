@@ -1,0 +1,26 @@
+{
+  "name": "transport-tracker-trial",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "prettier": "for file in *.js; do prettier --write --single-quote --bracket-spacing=false $file; done"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/maps": "^0.5.5",
+    "@mapbox/polyline": "^1.1.0",
+    "csv-parse": "^4.4.3",
+    "fibers": "^4.0.1",
+    "firebase-admin": "^8.3.0",
+    "moment": "^2.24.0",
+    "p-iteration": "^1.1.8",
+    "sqlite3": "^4.0.9"
+  },
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  }
+}
