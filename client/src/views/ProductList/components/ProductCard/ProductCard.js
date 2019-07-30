@@ -10,9 +10,9 @@ import {
   Grid,
   Divider
 } from '@material-ui/core';
-import TextField from './TextField'
 import AccessTimeIcon from '@material-ui/icons/AddCircle';
-import GetAppIcon from '@material-ui/icons/GetApp';
+
+import OptionTextField from './OptionTextField'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ProductCard = props => {
-  const { className, product, ...rest } = props;
+  const { className, product, order, setOrder, ...rest } = props;
 
   const classes = useStyles();
 
@@ -92,6 +92,7 @@ const ProductCard = props => {
           </Grid>
          <Grid>
         {/* add text field here */}
+        <OptionTextField id={product.id} order={order} setOrder={setOrder} />
 
           </Grid>
         </Grid>
@@ -102,7 +103,9 @@ const ProductCard = props => {
 
 ProductCard.propTypes = {
   className: PropTypes.string,
-  product: PropTypes.object.isRequired
+  product: PropTypes.object.isRequired,
+  order: PropTypes.array.isRequired,
+  setOrder: PropTypes.func.isRequired
 };
 
 export default ProductCard;

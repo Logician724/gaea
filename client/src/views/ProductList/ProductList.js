@@ -4,8 +4,10 @@ import { Button, Grid, Typography } from '@material-ui/core';
 import { ProductsToolbar, ProductCard } from './components';
 import {database} from '../../firebase-config';
 
+import RightSnackBar from '../../components/RightSnackbar'
 
 const recyclingMaterialRef = database.ref('recyclingMaterial');
+const orderRef = database.ref('orders')
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -26,6 +28,10 @@ const AdminProductList = () => {
   const [products, setProducts] = useState([]);
   const [limit, setLimit] = useState(6);
   const [numRetrived, setNumRetrived] = useState(0)
+  const [order, setOrder] = useState([])
+  const [message, setMessage] = useState("")
+  const [displaySnack, setDisplaySnack] = useState(false)
+
   const classes = useStyles();
   useEffect(() => {
     
@@ -43,8 +49,9 @@ const AdminProductList = () => {
       .catch(err => {
           console.log('Error getting documents', err);
       });
-    
-  })
+
+  
+    })
 
   const increment = () => {
     if(limit <= numRetrived) {
@@ -52,9 +59,21 @@ const AdminProductList = () => {
     }
   }
 
-  const decrement = () => {
-    if(limit !== 6) {
-      setLimit(limit - 6)
+  const makeOrder = async () => {
+    console.log('here')
+    const orderToSend = {
+      order: order,
+      address: "bla bla"
+    }
+    try {
+      const doc = await orderRef.push(orderToSend)
+      console.log( { message: `doccument ${doc.key} created successfully` })
+      setMessage("Order places successfully")
+      setDisplaySnack(true)
+    } catch (err) {
+      console.log(err)
+      setMessage("Opps somthing went wrong, try again in a bit.")
+      setDisplaySnack(true)
     }
   }
   
@@ -74,7 +93,7 @@ const AdminProductList = () => {
               md={6}
               xs={12}
             >
-              <ProductCard product={product} />
+              <ProductCard product={product} order = {order} setOrder = {setOrder} />
             </Grid>
           ))}
         </Grid>
@@ -87,7 +106,16 @@ const AdminProductList = () => {
           Show More
         </Button>
       </div>
+
+      <Button
+      center
+      color="primary"
+      variant="contained"
+      onClick={makeOrder}>
+        Place order
+      </Button>
     </div>
+
   );
 };
 

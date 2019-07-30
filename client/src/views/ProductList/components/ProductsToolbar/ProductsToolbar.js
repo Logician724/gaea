@@ -67,10 +67,9 @@ const ProductsToolbar = props => {
   
     try {
       const doc = await recyclingMaterialRef.push(newRecyclingMaterial)
-      return { message: `doccument ${doc.id} created successfully` }
+      console.log( { message: `doccument ${doc.key} created successfully` })
     } catch (err) {
       console.log(err)
-      return { error: 'Something went wrong' }
     }
   }
 
