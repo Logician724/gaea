@@ -117,6 +117,15 @@ const AdminProductList = props => {
         : null
       }
       <div className={classes.content}>
+        <Grid className={classes.center}>
+
+        {
+          products.length === 0?
+          <h1>Nothing to display</h1>
+          : null
+          
+        }
+        </Grid>
         <Grid
           container
           spacing={3}

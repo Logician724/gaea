@@ -52,7 +52,7 @@ const Sidebar = props => {
       icon: <PeopleIcon />
     },
     {
-      title: 'Products',
+      title: 'Recycling Products',
       href: '/products',
       icon: <ShoppingBasketIcon />
     },

@@ -56,11 +56,13 @@ const OptionTextField = props => {
   const [values, setValues] = React.useState(0);
   const handleChange = (event) => {
     const amount = event.target.value
-    const newOrder = order
-    newOrder.push({id: id, amount: amount})
-    setOrder(newOrder)
-    console.log(order)
-    setValues(amount);
+    if(amount !== 0){
+      const newOrder = order
+      newOrder.push({id: id, amount: amount})
+      setOrder(newOrder)
+      console.log(order)
+      setValues(amount);
+    }
     
   };
 
