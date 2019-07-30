@@ -112,7 +112,6 @@ exports.GTFS = class {
             if (err) {
                 return console.error(err.message);
             }
-            console.log('Connected to the in-memory SQlite database.');
             this.db.serialize(() => {
                 loadAgency(this.db);
                 loadCalendarDates(this.db);

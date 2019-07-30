@@ -10,6 +10,9 @@ const googleMapsClient = require('@google/maps').createClient({
     Promise: Promise
 });
 
+let express = require('express');
+let app = express();
+
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: trackerConfig.databaseURL
@@ -30,14 +33,37 @@ const { TimeTable } = require('./time_table.js');
 
 const gtfs = new GTFS();
 
+let heartbeat = null;
+let panelChanger = null;
+
 function foo() {
     //console.log('GTFS is:', gtfs)
-    new HeartBeat(timeRef, trackerConfig.simulation);
+    heartbeat = new HeartBeat(timeRef, trackerConfig.simulation);
+    panelChanger = new PanelChanger(mapRef, panelConfig);
     new TimeTable(timeRef, panelsRef, gtfs, panelConfig, googleMapsClient);
-    new PanelChanger(mapRef, panelConfig);
     if (trackerConfig.simulation) {
         new BusSimulator(timeRef, gtfs, busLocationsRef, generatedPaths);
     }
+    console.log('Simulation running')
 }
 
-setTimeout(foo, 2000);
+setTimeout(foo, 1000);
+
+app.get('/startHeartbeat', (req, res) => {
+    heartbeat.startHeartbeat()
+    panelChanger.startChanger()
+    console.log('Simulation Started');
+    res.sendStatus(200)
+});
+
+app.get('/stopHeartbeat', (req, res) => {
+    heartbeat.stopHeartbeat()
+    panelChanger.pauseChanger()
+    console.log('Simulation Stopped');
+    res.sendStatus(200)
+});
+
+var server = app.listen(3000, () => {
+    const port = server.address().port
+    console.log(`Simulation server running on ${port}`)
+});
