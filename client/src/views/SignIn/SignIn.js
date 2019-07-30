@@ -14,7 +14,7 @@ import {
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
-import {database} from '../../firebase-config';
+import { database } from '../../firebase-config';
 const userRef = database.ref('users');
 const schema = {
   email: {
@@ -174,9 +174,9 @@ const SignIn = props => {
   const handleSignIn = async (event) => {
     event.preventDefault();
     console.log(formState);
-    const dataSnapshot = await userRef.orderByChild('email').equalTo(formState.values.email).once('value');    
+    const dataSnapshot = await userRef.orderByChild('email').equalTo(formState.values.email).limitToFirst(1).once('value');
     // In case the email doesn't exist in the DB
-    if(!dataSnapshot.val()){
+    if (!dataSnapshot.val()) {
       return setFormState(formState => ({
         ...formState,
         errors: {
@@ -185,7 +185,9 @@ const SignIn = props => {
         }
       }));
     }
-    if(dataSnapshot.val().password !== formState.values.password){
+    const userData = Object.values(dataSnapshot.val())[0];
+    console.log(userData);
+    if (userData.password !== formState.values.password) {
       return setFormState(formState => ({
         ...formState,
         errors: {
@@ -194,7 +196,8 @@ const SignIn = props => {
         }
       }));
     }
-    localStorage.setItem('gaeaUser',JSON.stringify(dataSnapshot.val()));
+    localStorage.setItem('gaeaUserData', JSON.stringify(userData));
+    history.push('/');
   };
 
   const hasError = field =>
