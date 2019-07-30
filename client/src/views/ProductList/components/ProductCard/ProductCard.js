@@ -97,6 +97,7 @@ const ProductCard = props => {
                 {/* add text field here */}
                 <OptionTextField
                   id={product.id}
+                  isAmount
                   order={order}
                   setOrder={setOrder}
                 />

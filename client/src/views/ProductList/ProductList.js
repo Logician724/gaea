@@ -6,6 +6,8 @@ import {database} from '../../firebase-config';
 import { NotificationManager} from 'react-notifications';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withRouter} from 'react-router-dom';
+import OptionTextField from './components/ProductCard/OptionTextField'
+
 const recyclingMaterialRef = database.ref('recyclingMaterial');
 const marketplaceRef = database.ref('marketplace')
 
@@ -37,8 +39,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const AdminProductList = props => {
-  const {marketplace, history, ...rest } = props;
+  const {marketplace, history } = props;
   const [products, setProducts] = useState([]);
+  const [location, setLocation] = useState('');
   const [limit, setLimit] = useState(6);
   const [numRetrived, setNumRetrived] = useState(0)
   const [order, setOrder] = useState([])
@@ -114,7 +117,7 @@ const AdminProductList = props => {
   const makeOrder = async () => {
     const orderToSend = {
       order: order,
-      address: 'bla bla'
+      address: location
     }
     try {
       const doc = await orderRef.push(orderToSend)
@@ -186,6 +189,12 @@ const AdminProductList = props => {
       { userData.isAdmin? null
         :
         <div className={classes.center}>
+          <OptionTextField
+            id={null}
+            isAmount={false}
+            order={location}
+            setOrder={setLocation}
+          />
           <Button
             color="primary"
             onClick={makeOrder}

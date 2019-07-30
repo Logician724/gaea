@@ -48,9 +48,16 @@ const amounts = [
   },
 ];
 
+const location = [
+  {
+    value: 'loc1',
+    label: 'location 1'
+  }
+]
+
 const OptionTextField = props => {
 
-  const {id, order, setOrder, ...rest } = props;
+  const {id, order, setOrder, isAmount, ...rest } = props;
   const classes = useStyles();
 
   const [values, setValues] = React.useState(0);
@@ -64,6 +71,22 @@ const OptionTextField = props => {
     
   };
 
+  const handleLocation = (event) => {
+    const loc = event.target.value
+    setOrder(loc)
+    console.log(order)
+    setValues(loc);
+    
+  };
+
+  let choices = []
+  if (isAmount === true) {
+    choices = amounts
+  } else {
+    choices = location
+  }
+  console.log(`${isAmount} ${choices}`)
+
   return ( 
  <TextField
         id={id}
@@ -71,17 +94,17 @@ const OptionTextField = props => {
         label="Select"
         className={classes.textField}
         value={values}
-        onChange={handleChange}
+        onChange={isAmount?handleChange:handleLocation}
         SelectProps={{
           MenuProps: {
             className: classes.menu,
           },
         }}
-        helperText="Please select your amount"
+        helperText={isAmount?"Please select your amount":"Please select your location"}
         margin="normal"
         variant="outlined"
       >
-        {amounts.map(option => (
+        {choices.map(option => (
           <MenuItem key={option.value} value={option.value}>
             {option.label}
           </MenuItem>
