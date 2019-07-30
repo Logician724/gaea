@@ -188,17 +188,19 @@ const SignUp = props => {
     history.goBack();
   };
 
-  const handleSignUp = event => {
+  const handleSignUp = async event => {
     event.preventDefault();
     const userListRef = database.ref('users');
     const newUserRef = userListRef.push();
-    const newUser = newUserRef.set({
+    await newUserRef.set({
       firstName: formState.values.firstName,
       lastName: formState.values.lastName,
       email: formState.values.email,
       password: formState.values.password
     });
-    localStorage.setItem('gaeaUserData',JSON.stringify(newUser));
+    const dataSnapshot = await userListRef.orderByChild('email').equalTo(formState.values.email).limitToFirst(1).once('value');
+    const userData = Object.values(dataSnapshot.val())[0];
+    localStorage.setItem('gaeaUserData',JSON.stringify(userData));
     history.push('/');
   };
 
@@ -222,21 +224,14 @@ const SignUp = props => {
                 className={classes.quoteText}
                 variant="h1"
               >
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
+                GAEA
               </Typography>
               <div className={classes.person}>
                 <Typography
                   className={classes.name}
                   variant="body1"
                 >
-                  Takamaru Ayako
-                </Typography>
-                <Typography
-                  className={classes.bio}
-                  variant="body2"
-                >
-                  Manager at inVision
+                  We Only Have One Earth
                 </Typography>
               </div>
             </div>

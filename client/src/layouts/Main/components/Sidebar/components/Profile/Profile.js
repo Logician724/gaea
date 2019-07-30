@@ -37,14 +37,14 @@ const Profile = props => {
         component={RouterLink}
         to="/settings"
       >
-        {props.userData ? props.userData.firstName.charAt(0).toUpperCase() + props.userData.lastName.charAt(0).toUpperCase() : 'U'}
+        {props.user ? props.user.firstName.charAt(0).toUpperCase() + props.user.lastName.charAt(0).toUpperCase() : 'U'}
 
       </Avatar>
       <Typography
         className={classes.name}
         variant="h4"
       >
-        {props.userData ? props.userData.firstName + ' ' + props.userData.lastName : 'Unregistered User'}
+        {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Unregistered User'}
       </Typography>
     </div>
   );
