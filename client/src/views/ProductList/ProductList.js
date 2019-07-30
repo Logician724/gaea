@@ -39,12 +39,14 @@ const AdminProductList = () => {
   const [numRetrived, setNumRetrived] = useState(0)
   const [order, setOrder] = useState([])
   const [loaded, setLoaded] = useState(false)
+  const isAdmin = JSON.parse(localStorage.getItem('gaeaUserData')).isAdmin
+
   const classes = useStyles();
   useEffect(() => {
     
       let products = []
       let counter = 0
-      recyclingMaterialRef.limitToLast(limit).once("value")
+      recyclingMaterialRef.limitToFirst(limit).once("value")
       .then(snapshot => {
         snapshot.forEach(doc => {
           counter++
@@ -95,7 +97,10 @@ const AdminProductList = () => {
   
   return (
     <div className={classes.root}>
-      <ProductsToolbar />
+     { isAdmin?
+        <ProductsToolbar />
+        : null
+      }
       <div className={classes.content}>
         <Grid
           container
@@ -109,7 +114,7 @@ const AdminProductList = () => {
               md={6}
               xs={12}
             >
-              <ProductCard product={product} order = {order} setOrder = {setOrder} />
+              <ProductCard product={product} order = {order} setOrder = {setOrder} isAdmin={isAdmin} />
             </Grid>
           ))}
         </Grid>
@@ -122,14 +127,18 @@ const AdminProductList = () => {
           Show More
         </Button>
       </div>
-      <div className={classes.center}>
-        <Button
-        color="primary"
-        variant="contained"
-        onClick={makeOrder}>
-          Place order
-        </Button>
-      </div>
+      { isAdmin? null
+        :
+         <div className={classes.center}>
+         <Button
+         color="primary"
+         variant="contained"
+         onClick={makeOrder}>
+           Place order
+         </Button>
+       </div>
+      }
+     
     </div>
 
   );

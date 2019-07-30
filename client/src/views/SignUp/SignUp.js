@@ -196,7 +196,8 @@ const SignUp = props => {
       firstName: formState.values.firstName,
       lastName: formState.values.lastName,
       email: formState.values.email,
-      password: formState.values.password
+      password: formState.values.password,
+      isAdmin: false
     });
     const dataSnapshot = await userListRef.orderByChild('email').equalTo(formState.values.email).limitToFirst(1).once('value');
     const userData = Object.values(dataSnapshot.val())[0];
