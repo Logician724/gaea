@@ -188,37 +188,20 @@ const SignUp = props => {
     history.goBack();
   };
 
-  const handleSignUp = event => {
+  const handleSignUp = async event => {
     event.preventDefault();
-    console.log(formState);
     const userListRef = database.ref('users');
     const newUserRef = userListRef.push();
-    newUserRef.set({
+    await newUserRef.set({
       firstName: formState.values.firstName,
       lastName: formState.values.lastName,
       email: formState.values.email,
       password: formState.values.password
     });
-    // // In case the email doesn't exist in the DB
-    // if(!dataSnapshot.val()){
-    //   return setFormState(formState => ({
-    //     ...formState,
-    //     errors: {
-    //       ...formState.errors,
-    //       email: ['incorrect email']
-    //     }
-    //   }));
-    // }
-    // if(dataSnapshot.val().password !== formState.values.password){
-    //   return setFormState(formState => ({
-    //     ...formState,
-    //     errors: {
-    //       ...formState.errors,
-    //       password: ['incorrect password']
-    //     }
-    //   }));
-    // }
-    // localStorage.setItem('gaeaUser',JSON.stringify(dataSnapshot.val()));
+    const dataSnapshot = await userListRef.orderByChild('email').equalTo(formState.values.email).limitToFirst(1).once('value');
+    const userData = Object.values(dataSnapshot.val())[0];
+    localStorage.setItem('gaeaUserData',JSON.stringify(userData));
+    history.push('/');
   };
 
   const hasError = field =>
@@ -241,21 +224,14 @@ const SignUp = props => {
                 className={classes.quoteText}
                 variant="h1"
               >
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
+                GAEA
               </Typography>
               <div className={classes.person}>
                 <Typography
                   className={classes.name}
                   variant="body1"
                 >
-                  Takamaru Ayako
-                </Typography>
-                <Typography
-                  className={classes.bio}
-                  variant="body2"
-                >
-                  Manager at inVision
+                  We Only Have One Earth
                 </Typography>
               </div>
             </div>

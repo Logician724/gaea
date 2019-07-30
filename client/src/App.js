@@ -11,6 +11,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import './assets/scss/index.scss';
 import validators from './common/validators';
 import Routes from './Routes';
+import {NotificationContainer} from 'react-notifications';
 
 const browserHistory = createBrowserHistory();
 
@@ -30,6 +31,7 @@ export default class App extends Component {
         <Router history={browserHistory}>
           <Routes />
         </Router>
+        <NotificationContainer />
       </ThemeProvider>
     );
   }

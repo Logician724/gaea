@@ -6,15 +6,11 @@ import { makeStyles } from '@material-ui/styles';
 import {
   Grid,
   Button,
-  IconButton,
   TextField,
   Link,
   Typography
 } from '@material-ui/core';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
-import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
-import {database} from '../../firebase-config';
+import { database } from '../../firebase-config';
 const userRef = database.ref('users');
 const schema = {
   email: {
@@ -148,10 +144,6 @@ const SignIn = props => {
     }));
   }, [formState.values]);
 
-  const handleBack = () => {
-    history.goBack();
-  };
-
   const handleChange = event => {
     event.persist();
 
@@ -174,9 +166,9 @@ const SignIn = props => {
   const handleSignIn = async (event) => {
     event.preventDefault();
     console.log(formState);
-    const dataSnapshot = await userRef.orderByChild('email').equalTo(formState.values.email).once('value');    
+    const dataSnapshot = await userRef.orderByChild('email').equalTo(formState.values.email).limitToFirst(1).once('value');
     // In case the email doesn't exist in the DB
-    if(!dataSnapshot.val()){
+    if (!dataSnapshot.val()) {
       return setFormState(formState => ({
         ...formState,
         errors: {
@@ -185,7 +177,8 @@ const SignIn = props => {
         }
       }));
     }
-    if(dataSnapshot.val().password !== formState.values.password){
+    const userData = Object.values(dataSnapshot.val())[0];
+    if (userData.password !== formState.values.password) {
       return setFormState(formState => ({
         ...formState,
         errors: {
@@ -194,7 +187,8 @@ const SignIn = props => {
         }
       }));
     }
-    localStorage.setItem('gaeaUser',JSON.stringify(dataSnapshot.val()));
+    localStorage.setItem('gaeaUserData', JSON.stringify(userData));
+    history.push('/');
   };
 
   const hasError = field =>
@@ -217,21 +211,14 @@ const SignIn = props => {
                 className={classes.quoteText}
                 variant="h1"
               >
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
+                GAEA
               </Typography>
               <div className={classes.person}>
                 <Typography
                   className={classes.name}
                   variant="body1"
                 >
-                  Takamaru Ayako
-                </Typography>
-                <Typography
-                  className={classes.bio}
-                  variant="body2"
-                >
-                  Manager at inVision
+                  We Only Have One Earth
                 </Typography>
               </div>
             </div>
@@ -244,11 +231,6 @@ const SignIn = props => {
           xs={12}
         >
           <div className={classes.content}>
-            <div className={classes.contentHeader}>
-              <IconButton onClick={handleBack}>
-                <ArrowBackIcon />
-              </IconButton>
-            </div>
             <div className={classes.contentBody}>
               <form
                 className={classes.form}
@@ -259,47 +241,6 @@ const SignIn = props => {
                   variant="h2"
                 >
                   Sign in
-                </Typography>
-                <Typography
-                  color="textSecondary"
-                  gutterBottom
-                >
-                  Sign in with social media
-                </Typography>
-                <Grid
-                  className={classes.socialButtons}
-                  container
-                  spacing={2}
-                >
-                  <Grid item>
-                    <Button
-                      color="primary"
-                      onClick={handleSignIn}
-                      size="large"
-                      variant="contained"
-                    >
-                      <FacebookIcon className={classes.socialIcon} />
-                      Login with Facebook
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      onClick={handleSignIn}
-                      size="large"
-                      variant="contained"
-                    >
-                      <GoogleIcon className={classes.socialIcon} />
-                      Login with Google
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Typography
-                  align="center"
-                  className={classes.sugestion}
-                  color="textSecondary"
-                  variant="body1"
-                >
-                  or login with email address
                 </Typography>
                 <TextField
                   className={classes.textField}
