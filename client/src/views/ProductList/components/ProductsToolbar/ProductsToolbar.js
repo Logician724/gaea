@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle  } from '@material-ui/core';
 import { SearchInput } from 'components';
+import { NotificationManager} from 'react-notifications';
 
 import {database} from '../../../../firebase-config';
 
@@ -68,8 +69,10 @@ const ProductsToolbar = props => {
     try {
       const doc = await recyclingMaterialRef.push(newRecyclingMaterial)
       console.log( { message: `doccument ${doc.key} created successfully` })
+      NotificationManager.success('Item added successfully','Success',2000);
     } catch (err) {
       console.log(err)
+      NotificationManager.error('Something went wrong, try again in a bit.','Error',2000);
     }
   }
 

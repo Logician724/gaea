@@ -3,8 +3,8 @@ import { makeStyles } from '@material-ui/styles';
 import { Button, Grid, Typography } from '@material-ui/core';
 import { ProductsToolbar, ProductCard } from './components';
 import {database} from '../../firebase-config';
+import { NotificationManager} from 'react-notifications';
 
-import RightSnackBar from '../../components/RightSnackbar'
 
 const recyclingMaterialRef = database.ref('recyclingMaterial');
 const orderRef = database.ref('orders')
@@ -29,8 +29,6 @@ const AdminProductList = () => {
   const [limit, setLimit] = useState(6);
   const [numRetrived, setNumRetrived] = useState(0)
   const [order, setOrder] = useState([])
-  const [message, setMessage] = useState("")
-  const [displaySnack, setDisplaySnack] = useState(false)
 
   const classes = useStyles();
   useEffect(() => {
@@ -68,12 +66,10 @@ const AdminProductList = () => {
     try {
       const doc = await orderRef.push(orderToSend)
       console.log( { message: `doccument ${doc.key} created successfully` })
-      setMessage("Order places successfully")
-      setDisplaySnack(true)
+      NotificationManager.success('Order placed successfully','Success',2000);
     } catch (err) {
       console.log(err)
-      setMessage("Opps somthing went wrong, try again in a bit.")
-      setDisplaySnack(true)
+      NotificationManager.error('Something went wrong, try again in a bit.','Error',2000);
     }
   }
   
@@ -106,7 +102,6 @@ const AdminProductList = () => {
           Show More
         </Button>
       </div>
-
       <Button
       center
       color="primary"
