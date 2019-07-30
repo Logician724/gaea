@@ -48,7 +48,8 @@ const AccountProfile = props => {
     phone: '',
     state: 'Cairo',
     city: 'Cairo',
-    country: 'Egypt'
+    country: 'Egypt',
+    type: currentUser.isAdmin
   });
 
 
@@ -66,6 +67,21 @@ const AccountProfile = props => {
             >
               {`${user.firstName} ${user.lastName}`}
             </Typography>
+            <Typography
+              className={classes.locationText}
+              color="textSecondary"
+              variant="body1"
+            >
+              {
+                
+                `Account type: ${user.type ? "Admin" : "User"}`
+              }
+            </Typography>
+            <Typography
+              className={classes.dateText}
+              color="textSecondary"
+              variant="body1"
+            ></Typography>
             <Typography
               className={classes.locationText}
               color="textSecondary"
