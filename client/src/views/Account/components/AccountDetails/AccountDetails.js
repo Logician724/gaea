@@ -17,18 +17,19 @@ const useStyles = makeStyles(() => ({
   root: {}
 }));
 
+const currentUser = JSON.parse(localStorage.getItem('gaeaUserData'))
+
 const AccountDetails = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
-
   const [values, setValues] = useState({
-    firstName: 'Shen',
-    lastName: 'Zhi',
-    email: 'shen.zhi@devias.io',
+    firstName: currentUser.firstName,
+    lastName: currentUser.lastName,
+    email: currentUser.email,
     phone: '',
-    state: 'Alabama',
-    country: 'USA'
+    state: 'Cairo',
+    country: 'Egypt'
   });
 
   const handleChange = event => {
@@ -39,6 +40,10 @@ const AccountDetails = props => {
   };
 
   const states = [
+    {
+      value: 'cairo',
+      label: 'Cairo'
+    },
     {
       value: 'alabama',
       label: 'Alabama'
