@@ -48,7 +48,7 @@ const AdminProductList = () => {
       .then(snapshot => {
         snapshot.forEach(doc => {
           counter++
-          products.push({id: doc.key, title: doc.val().name ,description: doc.val().description});
+          products.push({id: doc.key, title: doc.val().name ,description: doc.val().description, imageUrl: doc.val().imageUrl});
         });
           if(loaded === false)
             setLoaded(true)
@@ -122,13 +122,14 @@ const AdminProductList = () => {
           Show More
         </Button>
       </div>
-      <Button
-      center
-      color="primary"
-      variant="contained"
-      onClick={makeOrder}>
-        Place order
-      </Button>
+      <div className={classes.center}>
+        <Button
+        color="primary"
+        variant="contained"
+        onClick={makeOrder}>
+          Place order
+        </Button>
+      </div>
     </div>
 
   );
