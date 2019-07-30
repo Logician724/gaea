@@ -186,7 +186,6 @@ const SignIn = props => {
       }));
     }
     const userData = Object.values(dataSnapshot.val())[0];
-    console.log(userData);
     if (userData.password !== formState.values.password) {
       return setFormState(formState => ({
         ...formState,
