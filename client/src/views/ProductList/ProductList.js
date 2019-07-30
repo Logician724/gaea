@@ -7,7 +7,10 @@ import { NotificationManager} from 'react-notifications';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const recyclingMaterialRef = database.ref('recyclingMaterial');
-const orderRef = database.ref('orders')
+const marketplaceRef = database.ref('marketplace')
+
+const recyclingorderRef = database.ref('recyclingOrders')
+const marketplaceorderRef = database.ref('marketplaceOrders')
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,7 +36,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const AdminProductList = () => {
+const AdminProductList = props => {
+  const {marketplace, ...rest } = props;
+
   const [products, setProducts] = useState([]);
   const [limit, setLimit] = useState(6);
   const [numRetrived, setNumRetrived] = useState(0)
@@ -41,12 +46,22 @@ const AdminProductList = () => {
   const [loaded, setLoaded] = useState(false)
   const isAdmin = JSON.parse(localStorage.getItem('gaeaUserData')).isAdmin
 
+  let addRef = null
+  let orderRef = null
+  if(marketplace === true) {
+    addRef = marketplaceRef
+    orderRef = marketplaceorderRef
+  } else {
+    addRef = recyclingMaterialRef
+    orderRef = recyclingorderRef
+  }
+
   const classes = useStyles();
   useEffect(() => {
     
       let products = []
       let counter = 0
-      recyclingMaterialRef.limitToFirst(limit).once("value")
+      addRef.limitToFirst(limit).once("value")
       .then(snapshot => {
         snapshot.forEach(doc => {
           counter++
@@ -98,7 +113,7 @@ const AdminProductList = () => {
   return (
     <div className={classes.root}>
      { isAdmin?
-        <ProductsToolbar />
+        <ProductsToolbar marketplace={marketplace} />
         : null
       }
       <div className={classes.content}>

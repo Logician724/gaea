@@ -8,6 +8,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsIcon from '@material-ui/icons/Settings';
+import ShopIcon from '@material-ui/icons/Shop';
 
 import { Profile, SidebarNav, UpgradePlan } from './components';
 
@@ -59,6 +60,11 @@ const Sidebar = props => {
       title: 'Account',
       href: '/account',
       icon: <AccountBoxIcon />
+    },
+    {
+      title: 'MarketPlace',
+      href: '/marketplace',
+      icon: <ShopIcon />
     },
     {
       title: 'Settings',

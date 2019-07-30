@@ -40,9 +40,17 @@ const Routes = () => {
       />
       <RouteWithLayout
         component={ProductListView}
+        marketplace={false}
         exact
         layout={MainLayout}
         path="/products"
+      />
+       <RouteWithLayout
+        component={ProductListView}
+        marketplace={true}
+        exact
+        layout={MainLayout}
+        path="/marketplace"
       />
       <RouteWithLayout
         component={TypographyView}
