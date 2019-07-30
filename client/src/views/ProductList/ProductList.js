@@ -5,7 +5,7 @@ import { ProductsToolbar, ProductCard } from './components';
 import {database} from '../../firebase-config';
 import { NotificationManager} from 'react-notifications';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import {withRouter} from 'react-router-dom';
 const recyclingMaterialRef = database.ref('recyclingMaterial');
 const marketplaceRef = database.ref('marketplace')
 
@@ -37,14 +37,39 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const AdminProductList = props => {
-  const {marketplace, ...rest } = props;
-
+  const {marketplace, history, ...rest } = props;
   const [products, setProducts] = useState([]);
   const [limit, setLimit] = useState(6);
   const [numRetrived, setNumRetrived] = useState(0)
   const [order, setOrder] = useState([])
   const [loaded, setLoaded] = useState(false)
-  const isAdmin = JSON.parse(localStorage.getItem('gaeaUserData')).isAdmin
+  const [userData, setUserData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    state: 'Cairo',
+    city: 'Cairo',
+    country: 'Egypt',
+    type: false
+  });
+
+  useEffect(() => {
+    if (!(userData && userData.email)) {
+      const userData = JSON.parse(localStorage.getItem('gaeaUserData'));
+      if (!userData) {
+        return history.push('/sign-in');
+      }
+      console.log('here: ', userData)
+      setUserData({
+        ...userData,
+        phone: '',
+        state: 'Cairo',
+        city: 'Cairo',
+        country: 'Egypt'
+      });
+    }
+  }, [userData]);
 
   let addRef = null
   let orderRef = null
@@ -58,26 +83,27 @@ const AdminProductList = props => {
 
   const classes = useStyles();
   useEffect(() => {
-    
+    if(!products || products.length == 0){
       let products = []
       let counter = 0
-      addRef.limitToFirst(limit).once("value")
-      .then(snapshot => {
-        snapshot.forEach(doc => {
-          counter++
-          products.push({id: doc.key, title: doc.val().name ,description: doc.val().description, imageUrl: doc.val().imageUrl});
-        });
+      addRef.limitToFirst(limit).once('value')
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            counter++
+            products.push({id: doc.key, title: doc.val().name ,description: doc.val().description, imageUrl: doc.val().imageUrl});
+          });
           if(loaded === false)
             setLoaded(true)
           setProducts(products)
           setNumRetrived(counter)
-      })
-      .catch(err => {
+        })
+        .catch(err => {
           console.log('Error getting documents', err);
-      });
+        });
 
+    }
   
-    })
+  })
 
   const increment = () => {
     if(limit <= numRetrived) {
@@ -86,10 +112,9 @@ const AdminProductList = props => {
   }
 
   const makeOrder = async () => {
-    console.log('here')
     const orderToSend = {
       order: order,
-      address: "bla bla"
+      address: 'bla bla'
     }
     try {
       const doc = await orderRef.push(orderToSend)
@@ -112,19 +137,19 @@ const AdminProductList = props => {
   
   return (
     <div className={classes.root}>
-     { isAdmin?
+      { userData.isAdmin?
         <ProductsToolbar marketplace={marketplace} />
         : null
       }
       <div className={classes.content}>
         <Grid className={classes.center}>
 
-        {
-          products.length === 0?
-          <h1>Nothing to display</h1>
-          : null
+          {
+            products.length === 0?
+              <h1>Nothing to display</h1>
+              : null
           
-        }
+          }
         </Grid>
         <Grid
           container
@@ -138,7 +163,13 @@ const AdminProductList = props => {
               md={6}
               xs={12}
             >
-              <ProductCard product={product} order = {order} setOrder = {setOrder} isAdmin={isAdmin} />
+              <ProductCard
+                isAdmin={userData.isAdmin}
+                order = {order}
+                product={product}
+                setOrder = {setOrder}
+
+              />
             </Grid>
           ))}
         </Grid>
@@ -146,21 +177,23 @@ const AdminProductList = props => {
       <div className={classes.pagination}>
         <Typography variant="caption">{`1-${numRetrived}`}</Typography>
         <Button
-        color="primary"
-        onClick={increment}>
+          color="primary"
+          onClick={increment}
+        >
           Show More
         </Button>
       </div>
-      { isAdmin? null
+      { userData.isAdmin? null
         :
-         <div className={classes.center}>
-         <Button
-         color="primary"
-         variant="contained"
-         onClick={makeOrder}>
+        <div className={classes.center}>
+          <Button
+            color="primary"
+            onClick={makeOrder}
+            variant="contained"
+          >
            Place order
-         </Button>
-       </div>
+          </Button>
+        </div>
       }
      
     </div>
@@ -168,4 +201,4 @@ const AdminProductList = props => {
   );
 };
 
-export default AdminProductList;
+export default withRouter(AdminProductList);

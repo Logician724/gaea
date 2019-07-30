@@ -75,40 +75,44 @@ const ProductCard = props => {
       <Divider />
       {
         isAdmin? null
-        :
-        <CardActions>
-          <Grid
-            container
-            justify="space-between"
-          >
+          :
+          <CardActions>
             <Grid
-              className={classes.statsItem}
-              item
+              container
+              justify="space-between"
             >
-              <AccessTimeIcon className={classes.statsIcon} />
-              <Typography
-                display="inline"
-                variant="body2"
+              <Grid
+                className={classes.statsItem}
+                item
               >
+                <AccessTimeIcon className={classes.statsIcon} />
+                <Typography
+                  display="inline"
+                  variant="body2"
+                >
               Choose amount
-              </Typography>
-            </Grid>
-          <Grid>
-          {/* add text field here */}
-          <OptionTextField id={product.id} order={order} setOrder={setOrder} />
+                </Typography>
+              </Grid>
+              <Grid>
+                {/* add text field here */}
+                <OptionTextField
+                  id={product.id}
+                  order={order}
+                  setOrder={setOrder}
+                />
 
+              </Grid>
             </Grid>
-          </Grid>
-        </CardActions>
-    }
+          </CardActions>
+      }
     </Card>
   );
 };
 
 ProductCard.propTypes = {
   className: PropTypes.string,
-  product: PropTypes.object.isRequired,
   order: PropTypes.array.isRequired,
+  product: PropTypes.object.isRequired,
   setOrder: PropTypes.func.isRequired
 };
 
