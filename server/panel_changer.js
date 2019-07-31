@@ -16,10 +16,14 @@ exports.PanelChanger = class {
     startChanger() {
         this.timeTimerId = setInterval(() => {
             this.panelAdvance();
-        }, 5000)
+        }, 3000)
     }
 
     pauseChanger() {
         clearInterval(this.timeTimerId)
+    }
+
+    resetChanger() {
+        this.panelIndex = 0;
     }
 };

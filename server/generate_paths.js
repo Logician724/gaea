@@ -23,8 +23,8 @@ async function generate_paths() {
     }
     const tripsWithLocations = [];
 
-    let index = 1
-    trips = trips.slice(index, index + 6)
+    let index = 0
+    trips = trips.slice(index, index + 1)
 
     for (const trip of trips) {
         tripIndex = trips.indexOf(trip)
