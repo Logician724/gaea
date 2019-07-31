@@ -1,0 +1,26 @@
+server {
+   root /var/www/gaea/client/build;
+   server_name app.gaea.cf;
+   index index.html index.htm
+   listen 80; # managed by Certbot
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/gaea.cf/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/gaea.cf/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = app.gaea.cf) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+   server_name app.gaea.cf;
+    listen 80;
+    return 404; # managed by Certbot
+
+
+}
