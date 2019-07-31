@@ -113,6 +113,7 @@ class Map extends React.Component {
 
 
   handleApiLoaded = async (map, maps, orderData, history) => {
+    await axios.get('resetHeartbeat');
     await axios.get('startHeartbeat');
     let done = false;
     console.log(maps);
@@ -176,8 +177,8 @@ class Map extends React.Component {
                 // Trigger Event here
                 done = true;
                 NotificationManager.success('Driver Reached the station, please meet him now', 'GO', 7000);
-                axios.get('stopHeartbeat'),then(() => {
-                  axios.get('resetHeartbeat'),then(() => {
+                axios.get('stopHeartbeat').then(() => {
+                  axios.get('resetHeartbeat').then(() => {
                     history.push('/marketplace');
                   });
                 });
