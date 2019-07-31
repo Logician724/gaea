@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import GoogleMapReact from 'google-map-react';
-import { app, database } from '../../firebase-config';
-import { makeStyles, useTheme } from '@material-ui/styles';
+import { database } from '../../firebase-config';
 import { withRouter } from 'react-router-dom';
 import MarkerManager from './MarkerManager';
 import {NotificationManager} from 'react-notifications';
@@ -176,6 +175,7 @@ class Map extends React.Component {
               if(station[0] === orderData.address){
                 // Trigger Event here
                 done = true;
+                localStorage.removeItem('gaeaOrder');
                 NotificationManager.success('Driver Reached the station, please meet him now', 'GO', 7000);
                 axios.get('stopHeartbeat').then(() => {
                   axios.get('resetHeartbeat').then(() => {
