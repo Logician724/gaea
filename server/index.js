@@ -50,6 +50,9 @@ function foo() {
 setTimeout(foo, 1000);
 
 app.get('/startHeartbeat', (req, res) => {
+    return res.status(200).send({msg: 'It is working!!!'});
+});
+app.get('/startHeartbeat', (req, res) => {
     heartbeat.startHeartbeat()
     panelChanger.startChanger()
     console.log('Simulation Started');
