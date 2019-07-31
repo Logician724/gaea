@@ -4,13 +4,11 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle  } from '@material-ui/core';
-import { SearchInput } from 'components';
 import { NotificationManager} from 'react-notifications';
 
 import {database} from '../../../../firebase-config';
 
 const recyclingMaterialRef = database.ref('recyclingMaterial');
-const marketplaceRef = database.ref('marketplace');
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -35,16 +33,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ProductsToolbar = props => {
-  const { className, marketplace, ...rest } = props;
+  const { className, ...rest } = props;
 
   let addRef = null
-  if(marketplace === true) {
-    addRef = marketplaceRef
-   
-  } else {
-    addRef = recyclingMaterialRef
-    
-  }
+  addRef = recyclingMaterialRef
 
   const classes = useStyles();
 
@@ -98,56 +90,66 @@ const ProductsToolbar = props => {
         <span className={classes.spacer} />
         <Button
           color="primary"
-          variant="contained"
           onClick={handleClickOpen}
+          variant="contained"
         >
           Add product
         </Button>
 
-        <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Add Item</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
+        <Dialog
+          aria-labelledby="form-dialog-title"
+          onClose={handleClose}
+          open={open}
+        >
+          <DialogTitle id="form-dialog-title">Add Item</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
             Please add the item name, decription and an image url
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            inputRef= {nameRef}
-            label="Name"
-            type="string"
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="description"
-            inputRef={descRef}
-            label="Description"
-            type="string"
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="url"
-            inputRef={urlRef}
-            label="Image Url"
-            type="string"
-            fullWidth
-          />
+            </DialogContentText>
+            <TextField
+              autoFocus
+              fullWidth
+              id="name"
+              inputRef= {nameRef}
+              label="Name"
+              margin="dense"
+              type="string"
+            />
+            <TextField
+              autoFocus
+              fullWidth
+              id="description"
+              inputRef={descRef}
+              label="Description"
+              margin="dense"
+              type="string"
+            />
+            <TextField
+              autoFocus
+              fullWidth
+              id="url"
+              inputRef={urlRef}
+              label="Image Url"
+              margin="dense"
+              type="string"
+            />
 
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          </DialogContent>
+          <DialogActions>
+            <Button
+              color="primary"
+              onClick={handleClose}
+            >
             Cancel
-          </Button>
-          <Button onClick={handleAdd} color="primary">
+            </Button>
+            <Button
+              color="primary"
+              onClick={handleAdd}
+            >
             Add
-          </Button>
-        </DialogActions>
-      </Dialog>
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
       {/* <div className={classes.row}>
         <SearchInput

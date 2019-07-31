@@ -8,11 +8,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {withRouter} from 'react-router-dom';
 import OptionTextField from './components/ProductCard/OptionTextField'
 
-const recyclingMaterialRef = database.ref('recyclingMaterial');
-const marketplaceRef = database.ref('marketplace')
-
-const recyclingorderRef = database.ref('recyclingOrders')
-const marketplaceorderRef = database.ref('marketplaceOrders')
+const addRef = database.ref('recyclingMaterial');
+const orderRef = database.ref('recyclingOrders');
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -39,11 +36,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const AdminProductList = props => {
-  const {marketplace, history } = props;
+  const { history } = props;
   const [products, setProducts] = useState([]);
   const [location, setLocation] = useState('');
   const [limit, setLimit] = useState(6);
-  const [numRetrived, setNumRetrieved] = useState(0)
+  const [numRetrieved, setNumRetrieved] = useState(0)
   const [order, setOrder] = useState([])
   const [loaded, setLoaded] = useState(false)
   const [userData, setUserData] = useState({
@@ -74,21 +71,13 @@ const AdminProductList = props => {
     }
   }, [userData]);
 
-  let addRef = null
-  let orderRef = null
-  if(marketplace === true) {
-    addRef = marketplaceRef
-    orderRef = marketplaceorderRef
-  } else {
-    addRef = recyclingMaterialRef
-    orderRef = recyclingorderRef
-  }
 
   const classes = useStyles();
   useEffect(() => {
-    if(!products || products.length == 0){
-      let products = []
-      let counter = 0
+    if(!products || products.length === 0){
+      let products = [];
+      let counter = 0;
+      console.log('The Ref is: ', addRef);
       addRef.limitToFirst(limit).once('value')
         .then(snapshot => {
           snapshot.forEach(doc => {
@@ -107,10 +96,10 @@ const AdminProductList = props => {
 
     }
   
-  })
+  });
 
   const increment = () => {
-    if(limit <= numRetrived) {
+    if(limit <= numRetrieved) {
       setLimit(limit + 6)
     }
   }
@@ -144,7 +133,7 @@ const AdminProductList = props => {
   return (
     <div className={classes.root}>
       { userData.isAdmin?
-        <ProductsToolbar marketplace={marketplace} />
+        <ProductsToolbar />
         : null
       }
       <div className={classes.content}>
@@ -181,7 +170,7 @@ const AdminProductList = props => {
         </Grid>
       </div>
       <div className={classes.pagination}>
-        <Typography variant="caption">{`1-${numRetrived}`}</Typography>
+        <Typography variant="caption">{`1-${numRetrieved}`}</Typography>
         <Button
           color="primary"
           onClick={increment}

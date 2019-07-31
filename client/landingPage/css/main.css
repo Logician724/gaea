@@ -2113,7 +2113,7 @@ input::-moz-focus-inner {
   padding-top: 3.2rem;
 }
 
-.home-content h1::before {
+/* .home-content h1::before {
   display: flex;
   content: "";
   height: 2px;
@@ -2121,7 +2121,7 @@ input::-moz-focus-inner {
   background-color: #5b4f96;
   position: relative;
   top: 0;
-}
+} */
 
 .home-content h3 {
   font-family: "Nunito Sans", sans-serif;

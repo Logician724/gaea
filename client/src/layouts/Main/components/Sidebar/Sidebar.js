@@ -42,11 +42,6 @@ const Sidebar = props => {
 
   const pages = [
     {
-      title: 'Dashboard',
-      href: '/dashboard',
-      icon: <DashboardIcon />
-    },
-    {
       title: 'My Account',
       href: '/account',
       icon: <AccountBoxIcon />
@@ -60,11 +55,6 @@ const Sidebar = props => {
       title: 'MarketPlace',
       href: '/marketplace',
       icon: <ShopIcon />
-    },
-    {
-      title: 'Map',
-      href: '/map',
-      icon: <MapIcon />
     },
     {
       title: 'Settings',

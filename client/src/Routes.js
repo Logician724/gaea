@@ -6,7 +6,8 @@ import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 
 import {
   Dashboard as DashboardView,
-  ProductList as ProductListView,
+  Marketplace as MarketplaceView,
+  RecyclingMaterials as RecyclingMaterialsView,
   UserList as UserListView,
   Typography as TypographyView,
   Icons as IconsView,
@@ -24,7 +25,7 @@ const Routes = () => {
       <Redirect
         exact
         from="/"
-        to="/dashboard"
+        to="/products"
       />
       <RouteWithLayout
         component={DashboardView}
@@ -39,15 +40,13 @@ const Routes = () => {
         path="/users"
       />
       <RouteWithLayout
-        component={ProductListView}
-        marketplace={false}
+        component={RecyclingMaterialsView}
         exact
         layout={MainLayout}
         path="/products"
       />
-       <RouteWithLayout
-        component={ProductListView}
-        marketplace={true}
+      <RouteWithLayout
+        component={MarketplaceView}
         exact
         layout={MainLayout}
         path="/marketplace"
@@ -77,6 +76,12 @@ const Routes = () => {
         path="/settings"
       />
       <RouteWithLayout
+        component={MapView}
+        exact
+        layout={MainLayout}
+        path="/map"
+      />
+      <RouteWithLayout
         component={SignUpView}
         exact
         layout={MinimalLayout}
@@ -87,12 +92,6 @@ const Routes = () => {
         exact
         layout={MinimalLayout}
         path="/sign-in"
-      />
-      <RouteWithLayout
-        component={MapView}
-        exact
-        layout={MainLayout}
-        path="/map"
       />
       <RouteWithLayout
         component={NotFoundView}
