@@ -16,6 +16,7 @@ import {
   SignUp as SignUpView,
   SignIn as SignInView,
   NotFound as NotFoundView,
+  Map as MapView
 } from './views';
 
 const Routes = () => {
@@ -73,6 +74,12 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/settings"
+      />
+      <RouteWithLayout
+        component={MapView}
+        exact
+        layout={MainLayout}
+        path="/map"
       />
       <RouteWithLayout
         component={SignUpView}
