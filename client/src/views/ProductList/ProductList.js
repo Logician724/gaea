@@ -43,7 +43,7 @@ const AdminProductList = props => {
   const [products, setProducts] = useState([]);
   const [location, setLocation] = useState('');
   const [limit, setLimit] = useState(6);
-  const [numRetrived, setNumRetrived] = useState(0)
+  const [numRetrived, setNumRetrieved] = useState(0)
   const [order, setOrder] = useState([])
   const [loaded, setLoaded] = useState(false)
   const [userData, setUserData] = useState({
@@ -95,10 +95,11 @@ const AdminProductList = props => {
             counter++
             products.push({id: doc.key, title: doc.val().name ,description: doc.val().description, imageUrl: doc.val().imageUrl});
           });
-          if(loaded === false)
-            setLoaded(true)
-          setProducts(products)
-          setNumRetrived(counter)
+          if(loaded === false){
+            setLoaded(true);
+          }
+          setProducts(products);
+          setNumRetrieved(counter);
         })
         .catch(err => {
           console.log('Error getting documents', err);
@@ -121,8 +122,10 @@ const AdminProductList = props => {
     }
     try {
       const doc = await orderRef.push(orderToSend)
-      console.log( { message: `doccument ${doc.key} created successfully` })
+      console.log( { message: `doccument ${doc.key} created successfully` });
+      localStorage.setItem('gaeaOrder', JSON.stringify(orderToSend));
       NotificationManager.success('Order placed successfully','Success',2000);
+      history.push('/map');
     } catch (err) {
       console.log(err)
       NotificationManager.error('Something went wrong, try again in a bit.','Error',2000);

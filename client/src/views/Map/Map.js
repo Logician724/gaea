@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import GoogleMapReact from 'google-map-react';
 import { app, database } from '../../firebase-config';
 import { makeStyles, useTheme } from '@material-ui/styles';
+import { withRouter } from 'react-router-dom';
 import MarkerManager from './MarkerManager';
-
+import {NotificationManager} from 'react-notifications';
 /* eslint-disable */
 const mapStyle = [
   {
@@ -63,7 +64,7 @@ function colorToBusMarker(color) {
 
 function geocodeAddress(address, map, icon, title, maps) {
   const geocoder = new maps.Geocoder();
-  geocoder.geocode({address: address}, (results, status) => {
+  geocoder.geocode({ address: address }, (results, status) => {
     if (status === 'OK') {
       const marker = new maps.Marker({
         map: map,
@@ -87,24 +88,32 @@ class Map extends React.Component {
     ],
     bounds: null,
     center: null,
-    zoom: 13
+    zoom: 13,
+    orderData: null
   };
-
   componentDidMount = async () => {
+    let orderData = localStorage.getItem('gaeaOrder');
+    if (!orderData) {
+      this.props.history.push('/products');
+    }
+    orderData = JSON.parse(orderData);
     const mapRef = database.ref('map');
     const midpointRef = database.ref('midpoint');
     const midpointSnapshot = await midpointRef.once('value');
     const midpoint = midpointSnapshot.val();
+
     this.setState((prevState) => ({
       ...prevState,
-      center: [midpoint.lat, midpoint.lng]
+      center: [midpoint.lat, midpoint.lng],
+      orderData: orderData
     }));
-    console.log(midpoint);
 
   }
 
 
-  handleApiLoaded = (map, maps) => {
+  handleApiLoaded = (map, maps, orderData, history) => {
+    let done = false;
+    console.log(maps);
     geocodeAddress(
       '1 Amphitheatre Pkwy, Mountain View, CA 94043',
       map,
@@ -136,13 +145,13 @@ class Map extends React.Component {
       });
       const timeRef = database.ref('current-time');
       timeRef.on('value', snapshot => {
-        console.log(snapshot.val().display);
+        //console.log(snapshot.val().display);
       });
       const busLocationMarkers = {};
       const busRef = database.ref('bus-locations');
       busRef.on('value', snapshot => {
         const val = snapshot.val();
-
+        //console.log('bus', orderData.address);
         for (let key in busLocationMarkers) {
           if (val === null || !(key in val)) {
             const marker = busLocationMarkers[key];
@@ -150,10 +159,25 @@ class Map extends React.Component {
             delete busLocationMarkers[key];
           }
         }
-
         for (let key in val) {
           const bus = val[key];
-
+          for (let station of markerManager.stationsMarkers) {
+            let stationLatLng = new maps.LatLng(station[1].lat, station[1].lng);
+            let busLatLng = new maps.LatLng(bus.lat, bus.lng);
+            var distance = maps.geometry.spherical.computeDistanceBetween(stationLatLng, busLatLng);
+    
+            //console.log('Distance is', distance);
+            
+            if (distance < 100 && !done) {
+              //console.log('Trip on route', bus.route_id, 'arrived at', station[0]);
+              if(station[0] === orderData.address){
+                // Trigger Event here
+                done = true;
+                NotificationManager.success('Driver Reached the station, please meet him now', 'GO', 7000);
+                history.push('/marketplace');
+              }
+            }
+          }
           if (key in busLocationMarkers) {
             const marker = busLocationMarkers[key];
             marker.setPosition({
@@ -182,25 +206,30 @@ class Map extends React.Component {
     });
   };
 
-  render = () => (
-    <div style={{ width: '100%', height: '100%' }}>
-      {this.state.center ?
-        <GoogleMapReact
+  render = () => {
+    console.log(this.state.orderData);
+    return (
+      <div style={{ width: '100%', height: '100%' }}>
+        {this.state.center ?
+          <GoogleMapReact
 
-          bootstrapURLKeys={{
-            key: 'AIzaSyAWBWFA0Yc2mVlahRENOsmmFSPNTHLfTdU'
-          }}
-          defaultCenter={this.state.center}
-          defaultZoom={this.state.zoom}
-          yesIWantToUseGoogleMapApiInternals
-          onGoogleApiLoaded={({ map, maps }) => this.handleApiLoaded(map, maps)}
-        >
-        </GoogleMapReact>
-        :
-        'Loading'
-      }
+            bootstrapURLKeys={{
+              key: 'AIzaSyAWBWFA0Yc2mVlahRENOsmmFSPNTHLfTdU',
+              libraries: 'geometry'
+            }}
+            defaultCenter={this.state.center}
+            defaultZoom={this.state.zoom}
+            yesIWantToUseGoogleMapApiInternals
+            onGoogleApiLoaded={({ map, maps }) => this.handleApiLoaded(map, maps, this.state.orderData, this.props.history)}
+          >
+          </GoogleMapReact>
+          :
+          'Loading'
+        }
 
-    </div>
-  );
+      </div>
+    );
+  };fix
+
 }
-export default Map;
+export default withRouter(Map);

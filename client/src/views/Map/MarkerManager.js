@@ -2,6 +2,7 @@ class MarkerManager {
   constructor(map) {
     this.map = map;
     this.markers = [];
+    this.stationsMarkers = [];
   }
   
   add(location, icon, title) {
@@ -12,6 +13,9 @@ class MarkerManager {
       title: title,
       optimized: false
     });
+    if (icon.split('/')[3] === 'placemarker.png') {
+      this.stationsMarkers.push([title, location]);
+    }
     this.markers.push(marker);
   }
   
