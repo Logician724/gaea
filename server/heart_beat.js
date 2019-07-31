@@ -8,7 +8,7 @@ const DATE_FORMAT = 'YYYYMMDD HH:mm:ss';
 // truthyness of `simulatedTime`
 exports.HeartBeat = class {
     constructor(timeRef, simulatedTime) {
-        this.simulationTime = moment.utc('2017-05-16 06:27', DATE_FORMAT);
+        this.simulationTime = moment.utc('2017-05-16 06:29', DATE_FORMAT);
         this.endOfSimulation = moment.utc('2017-05-18 18:00', DATE_FORMAT);
         this.timeRef = timeRef;
         this.simulated = simulatedTime;
@@ -68,6 +68,6 @@ exports.HeartBeat = class {
     }
 
     resetHeartbeat() {
-        this.simulationTime = moment.utc('2017-05-16 06:27', DATE_FORMAT);
+        this.simulationTime = moment.utc('2017-05-16 06:29', DATE_FORMAT);
     }
 };
