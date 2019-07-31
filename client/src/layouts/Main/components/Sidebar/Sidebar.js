@@ -4,13 +4,11 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Divider, Drawer } from '@material-ui/core';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import PeopleIcon from '@material-ui/icons/People';
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
-import TextFieldsIcon from '@material-ui/icons/TextFields';
-import ImageIcon from '@material-ui/icons/Image';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsIcon from '@material-ui/icons/Settings';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
+import ShopIcon from '@material-ui/icons/Shop';
+import MapIcon from '@material-ui/icons/Map'
 
 import { Profile, SidebarNav, UpgradePlan } from './components';
 
@@ -49,30 +47,30 @@ const Sidebar = props => {
       icon: <DashboardIcon />
     },
     {
-      title: 'Users',
-      href: '/users',
-      icon: <PeopleIcon />
+      title: 'My Account',
+      href: '/account',
+      icon: <AccountBoxIcon />
     },
     {
-      title: 'Products',
+      title: 'Recycling Products',
       href: '/products',
       icon: <ShoppingBasketIcon />
     },
     {
-      title: 'Account',
-      href: '/account',
-      icon: <AccountBoxIcon />
+      title: 'MarketPlace',
+      href: '/marketplace',
+      icon: <ShopIcon />
+    },
+    {
+      title: 'Map',
+      href: '/map',
+      icon: <MapIcon />
     },
     {
       title: 'Settings',
       href: '/settings',
       icon: <SettingsIcon />
     },
-    {
-      title: 'Map',
-      href: '/map',
-      icon: null
-    }
   ];
 
   return (

@@ -41,8 +41,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ProductCard = props => {
-  const { className, product, order, setOrder, ...rest } = props;
-
+  const { className, product, order, setOrder, isAdmin, ...rest } = props;
+  console.log(isAdmin)
   const classes = useStyles();
  
   return (
@@ -73,38 +73,47 @@ const ProductCard = props => {
         </Typography>
       </CardContent>
       <Divider />
-      <CardActions>
-        <Grid
-          container
-          justify="space-between"
-        >
-          <Grid
-            className={classes.statsItem}
-            item
-          >
-            <AccessTimeIcon className={classes.statsIcon} />
-            <Typography
-              display="inline"
-              variant="body2"
+      {
+        isAdmin? null
+          :
+          <CardActions>
+            <Grid
+              container
+              justify="space-between"
             >
-             Choose amount
-            </Typography>
-          </Grid>
-         <Grid>
-        {/* add text field here */}
-        <OptionTextField id={product.id} order={order} setOrder={setOrder} />
+              <Grid
+                className={classes.statsItem}
+                item
+              >
+                <AccessTimeIcon className={classes.statsIcon} />
+                <Typography
+                  display="inline"
+                  variant="body2"
+                >
+              Choose amount
+                </Typography>
+              </Grid>
+              <Grid>
+                {/* add text field here */}
+                <OptionTextField
+                  id={product.id}
+                  isAmount
+                  order={order}
+                  setOrder={setOrder}
+                />
 
-          </Grid>
-        </Grid>
-      </CardActions>
+              </Grid>
+            </Grid>
+          </CardActions>
+      }
     </Card>
   );
 };
 
 ProductCard.propTypes = {
   className: PropTypes.string,
-  product: PropTypes.object.isRequired,
   order: PropTypes.array.isRequired,
+  product: PropTypes.object.isRequired,
   setOrder: PropTypes.func.isRequired
 };
 

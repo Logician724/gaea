@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import PropTypes from 'prop-types';
-
+import { database } from '../../../../firebase-config';
 const useStyles = makeStyles(theme => ({
   container: {
     display: 'flex',
@@ -48,52 +47,84 @@ const amounts = [
   },
 ];
 
+
 const OptionTextField = props => {
 
-  const {id, order, setOrder, ...rest } = props;
+  const { id, order, setOrder, isAmount } = props;
   const classes = useStyles();
 
   const [values, setValues] = React.useState(0);
+  const [locations, setLocations] = React.useState([]);
   const handleChange = (event) => {
     const amount = event.target.value
     const newOrder = order
-    newOrder.push({id: id, amount: amount})
+    newOrder.push({ id: id, amount: amount })
     setOrder(newOrder)
-    console.log(order)
     setValues(amount);
-    
+
   };
 
-  return ( 
- <TextField
-        id={id}
-        select
-        label="Select"
-        className={classes.textField}
-        value={values}
-        onChange={handleChange}
-        SelectProps={{
-          MenuProps: {
-            className: classes.menu,
-          },
-        }}
-        helperText="Please select your amount"
-        margin="normal"
-        variant="outlined"
-      >
-        {amounts.map(option => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </TextField>
-      );
-    }
+  const handleLocation = (event) => {
+    const loc = event.target.value
+    setOrder(loc)
+    setValues(loc);
 
-OptionTextField.propTypes = {
-  id: PropTypes.string.isRequired,
-  order: PropTypes.array.isRequired,
-  setOrder: PropTypes.func.isRequired
-};
+  };
+
+  useEffect( () => {
+    if (!locations || locations.length === 0) {
+      const markersRef = database.ref('map/markers');
+      const newLocations = [];
+      markersRef.once('value').then(markersSnapshot=> {
+        const markers = markersSnapshot.val();
+        for(let marker of markers){
+          if(marker.iconPath === '/images/dashboard/placemarker.png'){
+            newLocations.push({
+              value: marker.name,
+              label: marker.name
+            });
+          }
+        }
+        setLocations(newLocations);
+      });
+    }
+  })
+
+  let choices = []
+  if (isAmount === true) {
+    choices = amounts
+  } else {
+    choices = locations
+  }
+
+  return (
+    <TextField
+      className={classes.textField}
+      helperText={isAmount ? 'Please select your amount' : 'Please select your location'}
+      id={id}
+      label="Select"
+      margin="normal"
+      onChange={isAmount ? handleChange : handleLocation}
+      select
+      SelectProps={{
+        MenuProps: {
+          className: classes.menu,
+        },
+      }}
+      value={values}
+      variant="outlined"
+    >
+      {choices.map(option => (
+        <MenuItem
+          key={option.value}
+          value={option.value}
+        >
+          {option.label}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
+}
+
 
 export default OptionTextField;

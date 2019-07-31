@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
+import {withRouter} from 'react-router-dom';
 import {
   Card,
   CardHeader,
@@ -18,27 +19,47 @@ const useStyles = makeStyles(() => ({
 }));
 
 const AccountDetails = props => {
-  const { className, ...rest } = props;
+  const { className, history, ...rest } = props;
 
   const classes = useStyles();
-
-  const [values, setValues] = useState({
-    firstName: 'Shen',
-    lastName: 'Zhi',
-    email: 'shen.zhi@devias.io',
+  const [userData, setUserData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
     phone: '',
-    state: 'Alabama',
-    country: 'USA'
+    state: 'Cairo',
+    city: 'Cairo',
+    country: 'Egypt',
+    isAdmin: false
   });
 
+  useEffect(() => {
+    if (!(userData && userData.email)) {
+      const userData = JSON.parse(localStorage.getItem('gaeaUserData'));
+      if (!userData) {
+        return history.push('/sign-in');
+      }
+      setUserData({
+        ...userData,
+        phone: '',
+        state: 'Cairo',
+        city: 'Cairo',
+        country: 'Egypt',
+      });
+    }
+  }, [userData]);
   const handleChange = event => {
-    setValues({
-      ...values,
+    setUserData({
+      ...userData,
       [event.target.name]: event.target.value
     });
   };
 
   const states = [
+    {
+      value: 'cairo',
+      label: 'Cairo'
+    },
     {
       value: 'alabama',
       label: 'Alabama'
@@ -85,7 +106,7 @@ const AccountDetails = props => {
                 name="firstName"
                 onChange={handleChange}
                 required
-                value={values.firstName}
+                value={userData.firstName}
                 variant="outlined"
               />
             </Grid>
@@ -101,7 +122,7 @@ const AccountDetails = props => {
                 name="lastName"
                 onChange={handleChange}
                 required
-                value={values.lastName}
+                value={userData.lastName}
                 variant="outlined"
               />
             </Grid>
@@ -117,7 +138,7 @@ const AccountDetails = props => {
                 name="email"
                 onChange={handleChange}
                 required
-                value={values.email}
+                value={userData.email}
                 variant="outlined"
               />
             </Grid>
@@ -133,7 +154,7 @@ const AccountDetails = props => {
                 name="phone"
                 onChange={handleChange}
                 type="number"
-                value={values.phone}
+                value={userData.phone}
                 variant="outlined"
               />
             </Grid>
@@ -152,7 +173,7 @@ const AccountDetails = props => {
                 select
                 // eslint-disable-next-line react/jsx-sort-props
                 SelectProps={{ native: true }}
-                value={values.state}
+                value={userData.state}
                 variant="outlined"
               >
                 {states.map(option => (
@@ -177,7 +198,7 @@ const AccountDetails = props => {
                 name="country"
                 onChange={handleChange}
                 required
-                value={values.country}
+                value={userData.country}
                 variant="outlined"
               />
             </Grid>
@@ -201,4 +222,4 @@ AccountDetails.propTypes = {
   className: PropTypes.string
 };
 
-export default AccountDetails;
+export default withRouter(AccountDetails);

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import moment from 'moment';
 import { makeStyles } from '@material-ui/styles';
+import {withRouter} from 'react-router-dom';
 import {
   Card,
   CardActions,
@@ -35,17 +36,35 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const AccountProfile = props => {
-  const { className, ...rest } = props;
+  const { className, history, ...rest } = props;
 
   const classes = useStyles();
+  const [userData, setUserData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    state: 'Cairo',
+    city: 'Cairo',
+    country: 'Egypt',
+    type: false
+  });
 
-  const user = {
-    name: 'Shen Zhi',
-    city: 'Los Angeles',
-    country: 'USA',
-    timezone: 'GTM-7',
-    avatar: '/images/avatars/avatar_11.png'
-  };
+  useEffect(() => {
+    if (!(userData && userData.email)) {
+      const userData = JSON.parse(localStorage.getItem('gaeaUserData'));
+      if (!userData) {
+        return history.push('/sign-in');
+      }
+      setUserData({
+        ...userData,
+        phone: '',
+        state: 'Cairo',
+        city: 'Cairo',
+        country: 'Egypt'
+      });
+    }
+  }, [userData]);
 
   return (
     <Card
@@ -59,26 +78,41 @@ const AccountProfile = props => {
               gutterBottom
               variant="h2"
             >
-              John Doe
+              {`${userData.firstName} ${userData.lastName}`}
             </Typography>
             <Typography
               className={classes.locationText}
               color="textSecondary"
               variant="body1"
             >
-              {user.city}, {user.country}
+              {
+                
+                `Account type: ${userData.type ? 'Admin' : 'User'}`
+              }
+            </Typography>
+            <Typography
+              className={classes.dateText}
+              color="textSecondary"
+              variant="body1"
+            />
+            <Typography
+              className={classes.locationText}
+              color="textSecondary"
+              variant="body1"
+            >
+              {userData.city}, {userData.country}
             </Typography>
             <Typography
               className={classes.dateText}
               color="textSecondary"
               variant="body1"
             >
-              {moment().format('hh:mm A')} ({user.timezone})
+              {moment().format('hh:mm A')} ({userData.timezone})
             </Typography>
           </div>
           <Avatar
             className={classes.avatar}
-            src={user.avatar}
+            src={userData.avatar}
           />
         </div>
         <div className={classes.progress}>
@@ -108,4 +142,4 @@ AccountProfile.propTypes = {
   className: PropTypes.string
 };
 
-export default AccountProfile;
+export default withRouter(AccountProfile);
