@@ -5,6 +5,7 @@ import { makeStyles, useTheme } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import MarkerManager from './MarkerManager';
 import {NotificationManager} from 'react-notifications';
+import axios from '../../axiosInstance';
 /* eslint-disable */
 const mapStyle = [
   {
@@ -111,7 +112,8 @@ class Map extends React.Component {
   }
 
 
-  handleApiLoaded = (map, maps, orderData, history) => {
+  handleApiLoaded = async (map, maps, orderData, history) => {
+    await axios.get('startHeartbeat');
     let done = false;
     console.log(maps);
     geocodeAddress(
@@ -174,7 +176,13 @@ class Map extends React.Component {
                 // Trigger Event here
                 done = true;
                 NotificationManager.success('Driver Reached the station, please meet him now', 'GO', 7000);
-                history.push('/marketplace');
+                axios.get('stopHeartbeat'),then(() => {
+                  axios.get('resetHeartbeat'),then(() => {
+                    history.push('/marketplace');
+                  });
+                });
+                
+                
               }
             }
           }

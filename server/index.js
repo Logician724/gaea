@@ -9,6 +9,7 @@ const googleMapsClient = require('@google/maps').createClient({
     key: trackerConfig.mapsApiKey,
     Promise: Promise
 });
+const cors = require('cors');
 
 let express = require('express');
 let app = express();
@@ -48,7 +49,7 @@ function foo() {
 }
 
 setTimeout(foo, 1000);
-
+app.use(cors());
 app.get('/', (req, res) => {
     return res.status(200).send({msg: 'It is working!!!'});
 });
