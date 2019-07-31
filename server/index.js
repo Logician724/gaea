@@ -44,7 +44,7 @@ function foo() {
     if (trackerConfig.simulation) {
         new BusSimulator(timeRef, gtfs, busLocationsRef, generatedPaths);
     }
-    console.log('Simulation running')
+    console.log('Simulation Ready')
 }
 
 setTimeout(foo, 1000);
@@ -60,6 +60,13 @@ app.get('/stopHeartbeat', (req, res) => {
     heartbeat.stopHeartbeat()
     panelChanger.pauseChanger()
     console.log('Simulation Stopped');
+    res.sendStatus(200)
+});
+
+app.get('/resetHeartbeat', (req, res)=>{
+    heartbeat.resetHeartbeat()
+    panelChanger.resetChanger()
+    console.log('Simulation Reset')
     res.sendStatus(200)
 });
 
